@@ -10,9 +10,11 @@ import {
   User,
   Building2,
   Phone,
-  ShoppingCart
+  ShoppingCart,
+  X
 } from 'lucide-react';
 
+// --- 資料庫 ---
 const DATA = {
   mask: {
     label: "面膜紙",
@@ -332,7 +334,7 @@ const App = () => {
         type="number" pattern="\d*" inputMode="numeric"
         value={inputValue} placeholder="0"
         onChange={handleChange} onBlur={handleBlur}
-        className={`mobile-input ${isMini ? 'w-10 text-[13px] text-white' : 'w-12 text-[15px] text-black'} text-center bg-transparent font-bold focus:outline-none`} 
+        className={`mobile-input ${isMini ? 'w-10 text-[13px] text-white' : 'w-12 text-[15px] text-black'} text-center bg-transparent font-black focus:outline-none`} 
       />
     );
   });
@@ -385,21 +387,86 @@ const App = () => {
 
   const hasItems = Object.values(cart).some(v => v > 0);
 
+  // --- 購物清單組件 (雙端通用) ---
+  const CartContent = ({ isSidebar = false }) => (
+    <div className={`space-y-6 ${isSidebar ? 'p-0' : 'px-8 pb-10'}`}>
+      {/* 聯絡資料 */}
+      <div id="customer-form" className="space-y-4 bg-white/5 p-6 rounded-[2rem] border border-white/10 shadow-inner">
+        <div className="text-[11px] font-black text-emerald-400 uppercase tracking-[0.2em] flex items-center gap-2 mb-4">
+          <Tag size={14} /> 聯絡資料 (必填)
+        </div>
+        <div className="space-y-3">
+          <div className="relative group">
+              <Building2 size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-emerald-400" />
+              <input type="text" placeholder="公司名稱 *" className="w-full bg-black/40 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-sm focus:border-emerald-500 outline-none placeholder:text-slate-600" value={customerInfo.company} onChange={(e) => setCustomerInfo({...customerInfo, company: e.target.value})} />
+          </div>
+          <div className="relative group">
+              <User size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-emerald-400" />
+              <input type="text" placeholder="聯絡人姓名 *" className="w-full bg-black/40 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-sm focus:border-emerald-500 outline-none placeholder:text-slate-600" value={customerInfo.contact} onChange={(e) => setCustomerInfo({...customerInfo, contact: e.target.value})} />
+          </div>
+          <div className="relative group">
+              <Phone size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-emerald-400" />
+              <input type="tel" placeholder="電話號碼 *" className="w-full bg-black/40 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-sm focus:border-emerald-500 outline-none placeholder:text-slate-600" value={customerInfo.phone} onChange={(e) => setCustomerInfo({...customerInfo, phone: e.target.value})} />
+          </div>
+        </div>
+      </div>
+
+      {/* 優惠進度 */}
+      <div className="space-y-4">
+        <div className="text-[11px] font-black text-slate-500 uppercase tracking-[0.2em] flex items-center gap-2">
+          <Tag size={14} className="text-blue-400" /> 優惠進度
+        </div>
+        {promos.progress.map(p => (
+          <div key={p.id} className="space-y-2 bg-white/5 p-4 rounded-2xl border border-white/5">
+            <div className="flex justify-between items-center gap-4">
+              <span className="text-[12px] font-extrabold text-white tracking-wide">{p.label}</span>
+              <span className="text-[10px] font-bold text-emerald-400">{p.current}</span>
+            </div>
+            <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
+              <div className={`h-full ${p.color} transition-all duration-1000`} style={{ width: `${p.percent}%` }} />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* 已選產品 */}
+      <div className="space-y-4">
+        <div className="text-[11px] font-black text-slate-500 uppercase tracking-[0.2em] border-b border-white/5 pb-2 flex items-center gap-2">
+          <ShoppingCart size={14} /> 已選購產品 ({cartSummary.itemsList.length})
+        </div>
+        <div className="space-y-3">
+          {cartSummary.itemsList.map(i => (
+            <div key={i.id || i.name} className="bg-white/5 p-4 rounded-2xl flex items-center justify-between gap-4 border border-white/5">
+              <div className="flex flex-col flex-1 min-w-0">
+                <span className="text-white font-bold text-xs truncate mb-1">{i.name}</span>
+                <span className="text-[10px] text-slate-500 font-mono tracking-tight">單價 ${i.unitPrice.toFixed(1)} | 小計 ${i.subtotal.toFixed(0)}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                 <QuantitySelector id={i.id || i.name} qty={i.qty} isMini={true} />
+                 <button onClick={() => updateQty(i.id || i.name, 0)} className="text-slate-600 hover:text-rose-400 p-1.5 transition-colors">
+                  <Trash2 size={16} />
+                 </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
   return (
-    <div className="min-h-screen bg-[#F8F9FA] text-slate-900 antialiased font-sans pb-40">
+    <div className="min-h-screen bg-[#F8F9FA] text-slate-900 antialiased font-sans pb-40 lg:pb-0">
       <header className="sticky top-0 bg-white/95 backdrop-blur-lg z-50 border-b border-slate-200 shadow-sm">
-        <div className="max-w-4xl mx-auto px-4 py-4">
+        <div className="max-w-6xl mx-auto px-4 py-4">
           <div className="flex justify-between items-center mb-4">
             <h1 className="font-serif tracking-widest text-2xl font-black italic text-slate-900">INFINITY</h1>
-            <div className="flex flex-col items-end">
-              <span className="text-[8px] tracking-[0.3em] text-slate-400 font-bold uppercase border border-slate-200 px-2 py-1 rounded-full">Chemical Trading</span>
-            </div>
+            <span className="text-[8px] tracking-[0.3em] text-slate-400 font-bold uppercase border border-slate-200 px-2 py-1 rounded-full">Chemical Trading</span>
           </div>
           <nav className="flex gap-8 overflow-x-auto no-scrollbar scroll-smooth">
             {Object.entries(DATA).map(([k, v]) => (
               <button key={k} onClick={() => setActiveTab(k)} className={`pb-3 text-xs tracking-[0.2em] relative whitespace-nowrap transition-all uppercase ${activeTab === k ? 'text-black font-extrabold' : 'text-slate-400 font-bold hover:text-slate-600'}`}>
                 {v.label}
-                {activeTab === k && <div className="absolute bottom-0 left-0 w-full h-1 bg-black rounded-t-full animate-in fade-in slide-in-from-bottom-1" />}
+                {activeTab === k && <div className="absolute bottom-0 left-0 w-full h-1 bg-black rounded-t-full" />}
               </button>
             ))}
           </nav>
@@ -407,7 +474,7 @@ const App = () => {
       </header>
 
       <div className="bg-white/50 backdrop-blur-sm border-b border-slate-200 sticky top-[108px] z-40 overflow-hidden">
-        <div className="max-w-4xl mx-auto px-4 py-3 flex gap-2 overflow-x-auto no-scrollbar">
+        <div className="max-w-6xl mx-auto px-4 py-3 flex gap-2 overflow-x-auto no-scrollbar">
           {DATA[activeTab].subCategories.map(c => (
             <button key={c} onClick={() => setActiveSubTab(c)} className={`px-4 py-2 rounded-full text-[11px] font-bold whitespace-nowrap border shadow-sm transition-all duration-200 ${activeSubTab === c ? 'bg-slate-900 text-white border-slate-900 scale-105' : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300'}`}>
               {c}
@@ -416,13 +483,14 @@ const App = () => {
         </div>
       </div>
 
-      <main className="max-w-4xl mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <main className="max-w-6xl mx-auto px-4 py-6 flex flex-col lg:flex-row gap-8">
+        {/* 左邊：產品清單 (改為一行一個) */}
+        <div className="flex-1 space-y-4">
           {(DATA[activeTab].items[activeSubTab] || []).map((item) => (
             <div key={item.id || item.name} className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex justify-between items-center hover:shadow-md transition-shadow duration-300">
               <div className="flex-1 pr-4">
                 {item.id && <span className="text-[9px] font-mono text-slate-400 block mb-1 tracking-wider">{item.id}</span>}
-                <h4 className="text-[13px] font-bold leading-snug text-slate-800 mb-2">{item.name}</h4>
+                <h4 className="text-[14px] font-bold leading-snug text-slate-800 mb-1">{item.name}</h4>
                 <div className="flex items-baseline gap-1">
                   <span className="text-[10px] font-bold text-slate-400">$</span>
                   <span className="text-slate-900 font-mono text-base font-black tracking-tight">
@@ -434,117 +502,73 @@ const App = () => {
             </div>
           ))}
         </div>
+
+        {/* 右邊：電腦版購物車側欄 */}
+        <div className="hidden lg:block w-80 xl:w-96 shrink-0">
+          <div className="sticky top-40 bg-slate-900 text-white rounded-[2.5rem] p-8 shadow-2xl border border-white/10 overflow-hidden ring-1 ring-black/5 flex flex-col max-h-[calc(100vh-160px)]">
+            <div className="flex items-center gap-3 mb-6 border-b border-white/10 pb-4">
+                <ShoppingCart size={20} className="text-emerald-400" />
+                <h3 className="text-lg font-black tracking-tight">落單清單</h3>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto custom-scrollbar pr-2">
+                <CartContent isSidebar={true} />
+            </div>
+
+            <div className="pt-6 border-t border-white/10 mt-6 space-y-4">
+                <div className="flex justify-between items-end">
+                    <span className="text-[10px] text-slate-500 font-black uppercase tracking-[0.2em]">應付總額</span>
+                    <span className="text-3xl font-mono font-black text-white leading-none">
+                        <span className="text-sm font-sans mr-1 text-slate-400">HK$</span>
+                        {promos.grandTotal.toLocaleString(undefined, { minimumFractionDigits: 1 })}
+                    </span>
+                </div>
+                <button onClick={handleFinalOrder} className={`w-full ${(!customerInfo.company || !customerInfo.contact || !customerInfo.phone) ? 'bg-slate-800 text-slate-500' : 'bg-emerald-500 text-white shadow-xl shadow-emerald-500/20 active:scale-95'} py-5 rounded-2xl font-black text-sm flex items-center justify-center gap-3 transition-all duration-300`}>
+                    <MessageCircle size={20} /> WhatsApp 落單
+                </button>
+            </div>
+          </div>
+        </div>
       </main>
 
-      <div className={`fixed bottom-0 left-0 right-0 z-[60] transition-all duration-500 ease-out transform ${hasItems ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'}`}>
+      {/* 手機版：底部購物車抽屜 */}
+      <div className={`lg:hidden fixed bottom-0 left-0 right-0 z-[60] transition-all duration-500 ease-out transform ${hasItems ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'}`}>
         <div className="max-w-xl mx-auto px-4 pb-8">
           <div className="bg-slate-900 text-white rounded-[2.5rem] shadow-2xl border border-white/10 overflow-hidden ring-1 ring-black/5">
-            <button onClick={() => setIsExpanded(!isExpanded)} className="w-full py-5 flex flex-col items-center gap-1 active:bg-white/5 transition-colors">
-              <div className="w-12 h-1.5 bg-white/20 rounded-full mb-1" />
-              <div className="text-[10px] tracking-[0.2em] font-black text-slate-400 uppercase flex items-center gap-2">
-                {isExpanded ? '收起清單' : '落單及填寫資料'} 
-                {isExpanded ? <ChevronDown size={14} className="animate-bounce" /> : <ChevronUp size={14} className="animate-bounce" />}
-              </div>
-            </button>
+            {/* 展開/收起 觸發區域 */}
+            <div className="relative">
+                <button onClick={() => setIsExpanded(!isExpanded)} className="w-full py-5 flex flex-col items-center gap-1 active:bg-white/5 transition-colors">
+                    <div className="w-12 h-1.5 bg-white/20 rounded-full mb-1" />
+                    <div className="text-[10px] tracking-[0.2em] font-black text-slate-400 uppercase flex items-center gap-2">
+                        {isExpanded ? '收起清單' : '落單及填寫資料'} 
+                        {isExpanded ? <ChevronDown size={14} className="animate-bounce" /> : <ChevronUp size={14} className="animate-bounce" />}
+                    </div>
+                </button>
+                {/* 手機版額外的收起掣，確保唔會「收唔返」 */}
+                {isExpanded && (
+                    <button onClick={() => setIsExpanded(false)} className="absolute right-6 top-5 p-2 bg-white/10 rounded-full text-white/50">
+                        <X size={16} />
+                    </button>
+                )}
+            </div>
 
             <div className={`transition-all duration-500 ease-in-out overflow-y-auto custom-scrollbar ${isExpanded ? 'max-h-[75vh]' : 'max-h-0'}`}>
-              <div className="px-8 pb-10 space-y-8">
-                
-                <div id="customer-form" className="space-y-4 bg-white/5 p-6 rounded-[2rem] border border-white/10 shadow-inner">
-                  <div className="text-[11px] font-black text-emerald-400 uppercase tracking-[0.2em] flex items-center gap-2 mb-4">
-                    <Tag size={14} /> 聯絡資料 (必填)
-                  </div>
-                  
-                  <div className="space-y-3">
-                    <div className="relative group">
-                        <Building2 size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-emerald-400 transition-colors" />
-                        <input 
-                            type="text"
-                            placeholder="公司名稱 *"
-                            className="w-full bg-black/40 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-sm focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/10 outline-none transition-all placeholder:text-slate-600"
-                            value={customerInfo.company}
-                            onChange={(e) => setCustomerInfo({...customerInfo, company: e.target.value})}
-                        />
-                    </div>
-                    <div className="relative group">
-                        <User size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-emerald-400 transition-colors" />
-                        <input 
-                            type="text"
-                            placeholder="聯絡人姓名 *"
-                            className="w-full bg-black/40 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-sm focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/10 outline-none transition-all placeholder:text-slate-600"
-                            value={customerInfo.contact}
-                            onChange={(e) => setCustomerInfo({...customerInfo, contact: e.target.value})}
-                        />
-                    </div>
-                    <div className="relative group">
-                        <Phone size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-emerald-400 transition-colors" />
-                        <input 
-                            type="tel"
-                            placeholder="電話號碼 *"
-                            className="w-full bg-black/40 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-sm focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/10 outline-none transition-all placeholder:text-slate-600"
-                            value={customerInfo.phone}
-                            onChange={(e) => setCustomerInfo({...customerInfo, phone: e.target.value})}
-                        />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="text-[11px] font-black text-slate-500 uppercase tracking-[0.2em] flex items-center gap-2">
-                    <Tag size={14} className="text-blue-400" /> 優惠進度
-                  </div>
-                  {promos.progress.map(p => (
-                    <div key={p.id} className="space-y-2.5 bg-white/5 p-5 rounded-2xl border border-white/5">
-                      <div className="flex justify-between items-center gap-4">
-                        <span className="text-[12px] font-extrabold text-white tracking-wide">{p.label}</span>
-                        <span className="text-[10px] font-bold text-emerald-400 text-right">{p.current}</span>
-                      </div>
-                      <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                        <div className={`h-full ${p.color} transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(16,185,129,0.3)]`} style={{ width: `${p.percent}%` }} />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="space-y-4">
-                  <div className="text-[11px] font-black text-slate-500 uppercase tracking-[0.2em] border-b border-white/5 pb-2 flex items-center gap-2">
-                    <ShoppingCart size={14} /> 已選購產品 ({cartSummary.itemsList.length})
-                  </div>
-                  <div className="space-y-3">
-                    {cartSummary.itemsList.map(i => (
-                      <div key={i.id || i.name} className="bg-white/5 p-4 rounded-2xl flex items-center justify-between gap-4 border border-white/5 hover:bg-white/[0.08] transition-colors">
-                        <div className="flex flex-col flex-1 min-w-0">
-                          <span className="text-white font-bold text-xs truncate mb-1">{i.name}</span>
-                          <span className="text-[10px] text-slate-500 font-mono tracking-tight">單價 ${i.unitPrice.toFixed(1)} | 小計 ${i.subtotal.toFixed(0)}</span>
-                        </div>
-                        <div className="flex items-center gap-3">
-                           <QuantitySelector id={i.id || i.name} qty={i.qty} isMini={true} />
-                           <button onClick={() => updateQty(i.id || i.name, 0)} className="text-slate-600 hover:text-rose-400 p-1.5 transition-colors">
-                            <Trash2 size={16} />
-                           </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
+                <CartContent isSidebar={false} />
             </div>
 
             <div className="px-10 py-8 bg-black/40 backdrop-blur-md flex items-center justify-between border-t border-white/10 shadow-2xl">
               <div className="flex flex-col">
-                <span className="text-[10px] text-slate-500 font-black uppercase tracking-[0.2em] mb-1">應付總額</span>
-                <span className="text-3xl font-mono font-black text-white tracking-tighter">
-                  <span className="text-sm font-sans mr-1 font-bold text-slate-400">HK$</span>
+                <span className="text-[9px] text-slate-500 font-black uppercase tracking-[0.2em] mb-1">應付總額</span>
+                <span className="text-2xl font-mono font-black text-white tracking-tighter leading-none">
                   {promos.grandTotal.toLocaleString(undefined, { minimumFractionDigits: 1 })}
                 </span>
               </div>
               <button 
                 onClick={handleFinalOrder} 
-                className={`group relative overflow-hidden ${(!customerInfo.company || !customerInfo.contact || !customerInfo.phone) ? 'bg-slate-800 text-slate-500' : 'bg-emerald-500 text-white shadow-xl shadow-emerald-500/20 active:scale-95'} px-10 py-5 rounded-2xl font-black text-sm flex items-center gap-3 transition-all duration-300`}
+                className={`group relative overflow-hidden ${(!customerInfo.company || !customerInfo.contact || !customerInfo.phone) ? 'bg-slate-800 text-slate-500' : 'bg-emerald-500 text-white shadow-xl shadow-emerald-500/20 active:scale-95'} px-8 py-5 rounded-2xl font-black text-sm flex items-center gap-3 transition-all duration-300`}
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-                <MessageCircle size={20} className="group-hover:rotate-12 transition-transform" /> 
-                WhatsApp 落單
+                <MessageCircle size={18} /> 
+                落單
               </button>
             </div>
           </div>
