@@ -9,10 +9,10 @@ import {
   ChevronDown,
   User,
   Building2,
-  Phone
+  Phone,
+  ShoppingCart
 } from 'lucide-react';
 
-// --- 完整資料庫整合 ---
 const DATA = {
   mask: {
     label: "面膜紙",
@@ -127,9 +127,7 @@ const DATA = {
         { id: "IG-009", name: "MERCURY水凝離子啫喱", price: 230 },
       ],
       "底霜": [
-        { id: "BC-001", name: "熊果素/維他命C底霜", price: 230 },
-        { id: "BC-002", name: "膠原蛋白底霜", price: 230 },
-        { id: "BC-003", name: "細緻毛孔控油底霜", price: 230 },
+        { id: "BC-001", name: "細緻毛孔控油底霜", price: 230 },
         { id: "BC-004", name: "玫瑰保濕底霜", price: 230 },
       ],
       "面膜": [
@@ -208,7 +206,6 @@ const App = () => {
   const [cart, setCart] = useState({});
   const [isExpanded, setIsExpanded] = useState(false);
   
-  // 客戶資料狀態
   const [customerInfo, setCustomerInfo] = useState({
     company: '',
     contact: '',
@@ -335,19 +332,19 @@ const App = () => {
         type="number" pattern="\d*" inputMode="numeric"
         value={inputValue} placeholder="0"
         onChange={handleChange} onBlur={handleBlur}
-        className={`mobile-input ${isMini ? 'w-10 text-[13px] text-white' : 'w-12 text-[15px] text-black'} text-center bg-transparent font-black focus:outline-none`} 
+        className={`mobile-input ${isMini ? 'w-10 text-[13px] text-white' : 'w-12 text-[15px] text-black'} text-center bg-transparent font-bold focus:outline-none`} 
       />
     );
   });
 
   const QuantitySelector = ({ id, qty, isMini = false }) => (
-    <div className={`flex items-center rounded-lg border ${isMini ? 'bg-white/10 border-white/10 p-0' : 'bg-gray-50 border-gray-100 p-0.5'}`}>
-      <button onClick={() => updateQty(id, (qty || 0) - 1)} className={`${isMini ? 'w-8 h-8 text-white/50' : 'w-10 h-10 text-gray-400'} flex items-center justify-center active:bg-white/10 rounded-l-md`}>
-        <Minus size={isMini ? 14 : 16}/>
+    <div className={`flex items-center rounded-lg border ${isMini ? 'bg-white/10 border-white/20 p-0' : 'bg-gray-50 border-gray-200 p-0.5'}`}>
+      <button onClick={() => updateQty(id, (qty || 0) - 1)} className={`${isMini ? 'w-8 h-8 text-white/70' : 'w-10 h-10 text-gray-500'} flex items-center justify-center active:bg-black/10 rounded-l-md transition-colors`}>
+        <Minus size={isMini ? 12 : 16}/>
       </button>
       <IsolatedInput id={id} initialQty={qty || 0} onUpdate={updateQty} isMini={isMini} />
-      <button onClick={() => updateQty(id, (qty || 0) + 1)} className={`${isMini ? 'w-8 h-8 text-white/50' : 'w-10 h-10 text-gray-400'} flex items-center justify-center active:bg-white/10 rounded-r-md`}>
-        <Plus size={isMini ? 14 : 16}/>
+      <button onClick={() => updateQty(id, (qty || 0) + 1)} className={`${isMini ? 'w-8 h-8 text-white/70' : 'w-10 h-10 text-gray-500'} flex items-center justify-center active:bg-black/10 rounded-r-md transition-colors`}>
+        <Plus size={isMini ? 12 : 16}/>
       </button>
     </div>
   );
@@ -356,8 +353,9 @@ const App = () => {
     if (!customerInfo.company || !customerInfo.contact || !customerInfo.phone) {
         if (!isExpanded) setIsExpanded(true);
         setTimeout(() => {
-          document.getElementById('customer-form')?.scrollIntoView({ behavior: 'smooth' });
-        }, 100);
+          const el = document.getElementById('customer-form');
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 150);
         return;
     }
 
@@ -388,43 +386,48 @@ const App = () => {
   const hasItems = Object.values(cart).some(v => v > 0);
 
   return (
-    <div className="min-h-screen bg-[#FBFBFB] text-black antialiased font-sans pb-40">
-      <header className="sticky top-0 bg-white/90 backdrop-blur-md z-50 border-b border-gray-100 shadow-sm">
-        <div className="max-w-4xl mx-auto px-5 pt-4 pb-1">
-          <div className="flex justify-between items-center mb-3">
-            <h1 className="font-serif tracking-[0.2em] text-xl font-black italic">INFINITY</h1>
-            <span className="text-[7px] tracking-[0.2em] text-gray-400 font-bold uppercase border border-gray-100 px-2 py-0.5 rounded">Chemical Trading</span>
+    <div className="min-h-screen bg-[#F8F9FA] text-slate-900 antialiased font-sans pb-40">
+      <header className="sticky top-0 bg-white/95 backdrop-blur-lg z-50 border-b border-slate-200 shadow-sm">
+        <div className="max-w-4xl mx-auto px-4 py-4">
+          <div className="flex justify-between items-center mb-4">
+            <h1 className="font-serif tracking-widest text-2xl font-black italic text-slate-900">INFINITY</h1>
+            <div className="flex flex-col items-end">
+              <span className="text-[8px] tracking-[0.3em] text-slate-400 font-bold uppercase border border-slate-200 px-2 py-1 rounded-full">Chemical Trading</span>
+            </div>
           </div>
-          <nav className="flex gap-6 overflow-x-auto no-scrollbar pb-1">
+          <nav className="flex gap-8 overflow-x-auto no-scrollbar scroll-smooth">
             {Object.entries(DATA).map(([k, v]) => (
-              <button key={k} onClick={() => setActiveTab(k)} className={`pb-2 text-[11px] tracking-widest relative whitespace-nowrap transition-all ${activeTab === k ? 'text-black font-black' : 'text-gray-400 font-medium'}`}>
+              <button key={k} onClick={() => setActiveTab(k)} className={`pb-3 text-xs tracking-[0.2em] relative whitespace-nowrap transition-all uppercase ${activeTab === k ? 'text-black font-extrabold' : 'text-slate-400 font-bold hover:text-slate-600'}`}>
                 {v.label}
-                {activeTab === k && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-black" />}
+                {activeTab === k && <div className="absolute bottom-0 left-0 w-full h-1 bg-black rounded-t-full animate-in fade-in slide-in-from-bottom-1" />}
               </button>
             ))}
           </nav>
         </div>
       </header>
 
-      <div className="bg-gray-50/50 overflow-x-auto no-scrollbar border-b border-gray-50 sticky top-[95px] z-40">
-        <div className="max-w-4xl mx-auto px-5 py-2 flex gap-2">
+      <div className="bg-white/50 backdrop-blur-sm border-b border-slate-200 sticky top-[108px] z-40 overflow-hidden">
+        <div className="max-w-4xl mx-auto px-4 py-3 flex gap-2 overflow-x-auto no-scrollbar">
           {DATA[activeTab].subCategories.map(c => (
-            <button key={c} onClick={() => setActiveSubTab(c)} className={`px-3 py-1.5 rounded-lg text-[10px] font-bold whitespace-nowrap border transition-all ${activeSubTab === c ? 'bg-black text-white border-black' : 'bg-white text-gray-400 border-gray-100'}`}>
+            <button key={c} onClick={() => setActiveSubTab(c)} className={`px-4 py-2 rounded-full text-[11px] font-bold whitespace-nowrap border shadow-sm transition-all duration-200 ${activeSubTab === c ? 'bg-slate-900 text-white border-slate-900 scale-105' : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300'}`}>
               {c}
             </button>
           ))}
         </div>
       </div>
 
-      <main className="max-w-4xl mx-auto px-5 py-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {(DATA[activeTab].items[activeSubTab] || []).map((item, idx) => (
-            <div key={item.id || item.name} className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex justify-between items-center">
-              <div className="flex-1 pr-3">
-                {item.id && <span className="text-[8px] font-mono text-gray-300 block mb-0.5">{item.id}</span>}
-                <h4 className="text-[12px] font-bold leading-tight text-gray-800">{item.name}</h4>
-                <div className="mt-1">
-                  <span className="text-gray-900 font-mono text-xs font-black">$ {activeTab === 'salon' ? (item.price/2).toFixed(1) : item.price.toFixed(1)}</span>
+      <main className="max-w-4xl mx-auto px-4 py-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {(DATA[activeTab].items[activeSubTab] || []).map((item) => (
+            <div key={item.id || item.name} className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex justify-between items-center hover:shadow-md transition-shadow duration-300">
+              <div className="flex-1 pr-4">
+                {item.id && <span className="text-[9px] font-mono text-slate-400 block mb-1 tracking-wider">{item.id}</span>}
+                <h4 className="text-[13px] font-bold leading-snug text-slate-800 mb-2">{item.name}</h4>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-[10px] font-bold text-slate-400">$</span>
+                  <span className="text-slate-900 font-mono text-base font-black tracking-tight">
+                    {activeTab === 'salon' ? (item.price/2).toFixed(1) : item.price.toFixed(1)}
+                  </span>
                 </div>
               </div>
               <QuantitySelector id={item.id || item.name} qty={cart[item.id || item.name] || 0} />
@@ -433,52 +436,52 @@ const App = () => {
         </div>
       </main>
 
-      <div className={`fixed bottom-0 left-0 right-0 z-[60] transition-transform duration-500 ${hasItems ? 'translate-y-0' : 'translate-y-full'}`}>
-        <div className="max-w-lg mx-auto px-4 pb-6">
-          <div className="bg-neutral-900 text-white rounded-[2.5rem] shadow-2xl border border-white/10 overflow-hidden">
-            <button onClick={() => setIsExpanded(!isExpanded)} className="w-full py-4 flex flex-col items-center gap-1 active:bg-white/5">
-              <div className="w-10 h-1 bg-white/20 rounded-full" />
-              <div className="text-[9px] tracking-widest font-bold text-gray-500 uppercase mt-1 flex items-center gap-1">
-                {isExpanded ? '收起清單' : '填寫資料及落單'} 
-                {isExpanded ? <ChevronDown size={12}/> : <ChevronUp size={12}/>}
+      <div className={`fixed bottom-0 left-0 right-0 z-[60] transition-all duration-500 ease-out transform ${hasItems ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'}`}>
+        <div className="max-w-xl mx-auto px-4 pb-8">
+          <div className="bg-slate-900 text-white rounded-[2.5rem] shadow-2xl border border-white/10 overflow-hidden ring-1 ring-black/5">
+            <button onClick={() => setIsExpanded(!isExpanded)} className="w-full py-5 flex flex-col items-center gap-1 active:bg-white/5 transition-colors">
+              <div className="w-12 h-1.5 bg-white/20 rounded-full mb-1" />
+              <div className="text-[10px] tracking-[0.2em] font-black text-slate-400 uppercase flex items-center gap-2">
+                {isExpanded ? '收起清單' : '落單及填寫資料'} 
+                {isExpanded ? <ChevronDown size={14} className="animate-bounce" /> : <ChevronUp size={14} className="animate-bounce" />}
               </div>
             </button>
 
-            <div className={`transition-all duration-300 overflow-y-auto ${isExpanded ? 'max-h-[70vh]' : 'max-h-0'}`}>
-              <div className="px-8 pb-8 space-y-6">
+            <div className={`transition-all duration-500 ease-in-out overflow-y-auto custom-scrollbar ${isExpanded ? 'max-h-[75vh]' : 'max-h-0'}`}>
+              <div className="px-8 pb-10 space-y-8">
                 
-                <div id="customer-form" className="space-y-4 bg-white/5 p-5 rounded-3xl border border-white/5">
-                  <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                    <Tag size={12} className="text-emerald-500" /> 請填寫聯絡資料
+                <div id="customer-form" className="space-y-4 bg-white/5 p-6 rounded-[2rem] border border-white/10 shadow-inner">
+                  <div className="text-[11px] font-black text-emerald-400 uppercase tracking-[0.2em] flex items-center gap-2 mb-4">
+                    <Tag size={14} /> 聯絡資料 (必填)
                   </div>
                   
                   <div className="space-y-3">
-                    <div className="relative">
-                        <Building2 size={14} className="absolute left-3 top-3.5 text-gray-500" />
+                    <div className="relative group">
+                        <Building2 size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-emerald-400 transition-colors" />
                         <input 
                             type="text"
                             placeholder="公司名稱 *"
-                            className="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-xs focus:border-emerald-500 outline-none transition-colors"
+                            className="w-full bg-black/40 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-sm focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/10 outline-none transition-all placeholder:text-slate-600"
                             value={customerInfo.company}
                             onChange={(e) => setCustomerInfo({...customerInfo, company: e.target.value})}
                         />
                     </div>
-                    <div className="relative">
-                        <User size={14} className="absolute left-3 top-3.5 text-gray-500" />
+                    <div className="relative group">
+                        <User size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-emerald-400 transition-colors" />
                         <input 
                             type="text"
                             placeholder="聯絡人姓名 *"
-                            className="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-xs focus:border-emerald-500 outline-none transition-colors"
+                            className="w-full bg-black/40 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-sm focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/10 outline-none transition-all placeholder:text-slate-600"
                             value={customerInfo.contact}
                             onChange={(e) => setCustomerInfo({...customerInfo, contact: e.target.value})}
                         />
                     </div>
-                    <div className="relative">
-                        <Phone size={14} className="absolute left-3 top-3.5 text-gray-500" />
+                    <div className="relative group">
+                        <Phone size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-emerald-400 transition-colors" />
                         <input 
                             type="tel"
                             placeholder="電話號碼 *"
-                            className="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-xs focus:border-emerald-500 outline-none transition-colors"
+                            className="w-full bg-black/40 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-sm focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/10 outline-none transition-all placeholder:text-slate-600"
                             value={customerInfo.phone}
                             onChange={(e) => setCustomerInfo({...customerInfo, phone: e.target.value})}
                         />
@@ -486,46 +489,62 @@ const App = () => {
                   </div>
                 </div>
 
-                {promos.progress.map(p => (
-                  <div key={p.id} className="space-y-2 bg-white/5 p-4 rounded-2xl border border-white/5">
-                    <div className="flex justify-between items-center gap-2">
-                      <span className="text-[11px] font-bold text-white whitespace-nowrap">{p.label}</span>
-                      <span className="text-[10px] font-medium text-emerald-400 text-right">{p.current}</span>
-                    </div>
-                    <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
-                      <div className={`h-full ${p.color} transition-all duration-700`} style={{ width: `${p.percent}%` }} />
-                    </div>
+                <div className="space-y-4">
+                  <div className="text-[11px] font-black text-slate-500 uppercase tracking-[0.2em] flex items-center gap-2">
+                    <Tag size={14} className="text-blue-400" /> 優惠進度
                   </div>
-                ))}
-
-                <div className="space-y-3">
-                  <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest border-b border-white/5 pb-1">已選清單</div>
-                  {cartSummary.itemsList.map(i => (
-                    <div key={i.id || i.name} className="bg-white/5 p-3 rounded-2xl flex items-center justify-between gap-4">
-                      <div className="flex flex-col flex-1 min-w-0">
-                        <span className="text-gray-100 font-bold text-[11px] truncate">{i.name}</span>
-                        <span className="text-[9px] text-gray-500 mt-0.5">單價: ${i.unitPrice.toFixed(1)} | 小計: ${i.subtotal.toFixed(0)}</span>
+                  {promos.progress.map(p => (
+                    <div key={p.id} className="space-y-2.5 bg-white/5 p-5 rounded-2xl border border-white/5">
+                      <div className="flex justify-between items-center gap-4">
+                        <span className="text-[12px] font-extrabold text-white tracking-wide">{p.label}</span>
+                        <span className="text-[10px] font-bold text-emerald-400 text-right">{p.current}</span>
                       </div>
-                      <div className="flex items-center gap-2">
-                         <QuantitySelector id={i.id || i.name} qty={i.qty} isMini={true} />
-                         <button onClick={() => updateQty(i.id || i.name, 0)} className="text-gray-400 hover:text-rose-500 p-2 active:scale-90"><Trash2 size={16} /></button>
+                      <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                        <div className={`h-full ${p.color} transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(16,185,129,0.3)]`} style={{ width: `${p.percent}%` }} />
                       </div>
                     </div>
                   ))}
                 </div>
+
+                <div className="space-y-4">
+                  <div className="text-[11px] font-black text-slate-500 uppercase tracking-[0.2em] border-b border-white/5 pb-2 flex items-center gap-2">
+                    <ShoppingCart size={14} /> 已選購產品 ({cartSummary.itemsList.length})
+                  </div>
+                  <div className="space-y-3">
+                    {cartSummary.itemsList.map(i => (
+                      <div key={i.id || i.name} className="bg-white/5 p-4 rounded-2xl flex items-center justify-between gap-4 border border-white/5 hover:bg-white/[0.08] transition-colors">
+                        <div className="flex flex-col flex-1 min-w-0">
+                          <span className="text-white font-bold text-xs truncate mb-1">{i.name}</span>
+                          <span className="text-[10px] text-slate-500 font-mono tracking-tight">單價 ${i.unitPrice.toFixed(1)} | 小計 ${i.subtotal.toFixed(0)}</span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                           <QuantitySelector id={i.id || i.name} qty={i.qty} isMini={true} />
+                           <button onClick={() => updateQty(i.id || i.name, 0)} className="text-slate-600 hover:text-rose-400 p-1.5 transition-colors">
+                            <Trash2 size={16} />
+                           </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div className="px-8 py-6 bg-white/5 flex items-center justify-between border-t border-white/10">
+            <div className="px-10 py-8 bg-black/40 backdrop-blur-md flex items-center justify-between border-t border-white/10 shadow-2xl">
               <div className="flex flex-col">
-                <span className="text-[9px] text-gray-500 font-bold uppercase tracking-tighter">應付總額</span>
-                <span className="text-2xl font-mono font-black text-white">HK$ {promos.grandTotal.toLocaleString(undefined, { minimumFractionDigits: 1 })}</span>
+                <span className="text-[10px] text-slate-500 font-black uppercase tracking-[0.2em] mb-1">應付總額</span>
+                <span className="text-3xl font-mono font-black text-white tracking-tighter">
+                  <span className="text-sm font-sans mr-1 font-bold text-slate-400">HK$</span>
+                  {promos.grandTotal.toLocaleString(undefined, { minimumFractionDigits: 1 })}
+                </span>
               </div>
               <button 
                 onClick={handleFinalOrder} 
-                className={`${(!customerInfo.company || !customerInfo.contact || !customerInfo.phone) ? 'bg-gray-700 opacity-50' : 'bg-emerald-500 shadow-emerald-500/20'} text-white px-8 py-4 rounded-2xl font-black text-[14px] flex items-center gap-2 shadow-lg active:scale-95 transition-all`}
+                className={`group relative overflow-hidden ${(!customerInfo.company || !customerInfo.contact || !customerInfo.phone) ? 'bg-slate-800 text-slate-500' : 'bg-emerald-500 text-white shadow-xl shadow-emerald-500/20 active:scale-95'} px-10 py-5 rounded-2xl font-black text-sm flex items-center gap-3 transition-all duration-300`}
               >
-                <MessageCircle size={18} /> WhatsApp 落單
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                <MessageCircle size={20} className="group-hover:rotate-12 transition-transform" /> 
+                WhatsApp 落單
               </button>
             </div>
           </div>
@@ -537,6 +556,9 @@ const App = () => {
         .mobile-input { font-size: 16px !important; }
         input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         * { -webkit-tap-highlight-color: transparent; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
       `}</style>
     </div>
   );
