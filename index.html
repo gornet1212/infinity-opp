@@ -1,13 +1,35 @@
 <!DOCTYPE html>
+
 <html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>INFINITY 落單系統</title>
-    <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>INFINITY | 訂單系統</title>
+
+<!-- 引入高質感字體 -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Noto+Sans+HK:wght@400;700;900&display=swap" rel="stylesheet">
+
+<!-- 引入 Tailwind CSS 官方 CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+  body {
+    font-family: 'Inter', 'Noto Sans HK', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    background-color: #f8f9fa;
+  }
+  /* 修正移動端 iOS 點擊閃爍問題 */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+</style>
+
+
+</head>
+<body>
+<div id="root"></div>
+<script type="module" src="/src/main.jsx"></script>
+</body>
 </html>
