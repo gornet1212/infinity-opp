@@ -211,11 +211,7 @@ const App = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [zoomScale, setZoomScale] = useState(1); 
   
-  const [customerInfo, setCustomerInfo] = useState({
-    company: '',
-    contact: '',
-    phone: ''
-  });
+  const [customerInfo, setCustomerInfo] = useState({ company: '', contact: '', phone: '' });
 
   useEffect(() => {
     setActiveSubTab(DATA[activeTab].subCategories[0]);
@@ -241,7 +237,6 @@ const App = () => {
   const cartSummary = useMemo(() => {
     const rawItems = [];
     let stats = { salonHalfTotal: 0, retailTotal: 0, retailCount: 0, maskNormalCount: 0, maskSerumCount: 0 };
-
     Object.entries(cart).forEach(([id, qty]) => {
       if (qty <= 0) return;
       let product = null;
@@ -253,69 +248,38 @@ const App = () => {
         }
         if (product) break;
       }
-
       if (product) {
         rawItems.push({ ...product, categoryKey, qty });
         if (categoryKey === 'salon') stats.salonHalfTotal += (product.price / 2) * qty;
-        else if (categoryKey === 'retail') {
-          stats.retailTotal += product.price * qty;
-          stats.retailCount += qty;
-        } else if (categoryKey === 'mask') {
-          if (product.type === 'normal') stats.maskNormalCount += qty;
-          else stats.maskSerumCount += qty;
-        }
+        else if (categoryKey === 'retail') { stats.retailTotal += product.price * qty; stats.retailCount += qty; }
+        else if (categoryKey === 'mask') { if (product.type === 'normal') stats.maskNormalCount += qty; else stats.maskSerumCount += qty; }
       }
     });
-
     const nInfo = getMaskPriceInfo(stats.maskNormalCount, 'normal');
     const sInfo = getMaskPriceInfo(stats.maskSerumCount, 'serum');
-
     const itemsList = rawItems.map(item => {
       let unitPrice = item.price;
       if (item.categoryKey === 'salon') unitPrice = item.price / 2;
-      else if (item.categoryKey === 'mask') {
-        unitPrice = item.type === 'normal' ? nInfo.currentPrice : sInfo.currentPrice;
-      }
+      else if (item.categoryKey === 'mask') { unitPrice = item.type === 'normal' ? nInfo.currentPrice : sInfo.currentPrice; }
       return { ...item, unitPrice, subtotal: unitPrice * item.qty };
     });
-
     return { itemsList, stats, nInfo, sInfo };
   }, [cart, getMaskPriceInfo]);
 
   const promos = useMemo(() => {
     const { stats, itemsList, nInfo, sInfo } = cartSummary;
-    let salonLabel = "";
-    let salonDeduct = 0;
-    let salonPercent = 0;
+    let salonLabel = "", salonDeduct = 0, salonPercent = 0;
     const totalVal = stats.salonHalfTotal;
 
-    // --- 美容院裝優化邏輯 ---
-    if (totalVal >= 2300) {
-      salonLabel = "已享有 $1600 送 $700 優惠";
-      salonDeduct = 700;
-      salonPercent = 100;
-    } else if (totalVal >= 1600) {
-      salonLabel = `已扣減 $700，仲可以揀多 $${(2300 - totalVal).toFixed(2)} 免費貨`;
-      salonDeduct = totalVal - 1600; 
-      salonPercent = 100;
-    } else if (totalVal >= 1000) {
-      salonLabel = `已享 $200 優惠，仲差 $${(1600 - totalVal).toFixed(2)} 享 $700 優惠`;
-      salonDeduct = 200;
-      salonPercent = (totalVal / 1600) * 100;
-    } else if (totalVal >= 800) {
-      salonLabel = `已扣減 $200，仲可以揀多 $${(1000 - totalVal).toFixed(2)} 免費貨`;
-      salonDeduct = totalVal - 800; 
-      salonPercent = 100;
-    } else {
-      salonLabel = `仲差 $${(800 - totalVal).toFixed(2)} 享 $800 送 $200 優惠`;
-      salonDeduct = 0;
-      salonPercent = (totalVal / 800) * 100;
-    }
+    if (totalVal >= 2300) { salonLabel = "已享有 $1600 送 $700 優惠"; salonDeduct = 700; salonPercent = 100; }
+    else if (totalVal >= 1600) { salonLabel = `已扣減 $700，仲可以揀多 $${(2300 - totalVal).toFixed(2)} 免費貨`; salonDeduct = totalVal - 1600; salonPercent = 100; }
+    else if (totalVal >= 1000) { salonLabel = `已享 $200 優惠，仲差 $${(1600 - totalVal).toFixed(2)} 享 $700 優惠`; salonDeduct = 200; salonPercent = (totalVal / 1600) * 100; }
+    else if (totalVal >= 800) { salonLabel = `已扣減 $200，仲可以揀多 $${(1000 - totalVal).toFixed(2)} 免費貨`; salonDeduct = totalVal - 800; salonPercent = 100; }
+    else { salonLabel = `仲差 $${(800 - totalVal).toFixed(2)} 享 $800 送 $200 優惠`; salonDeduct = 0; salonPercent = (totalVal / 800) * 100; }
 
     const retailDiscount = stats.retailCount >= 6 ? stats.retailTotal * 0.2 : 0;
     const retailFinal = stats.retailTotal - retailDiscount;
     const maskTotal = itemsList.filter(i => i.categoryKey === 'mask').reduce((acc, i) => acc + i.subtotal, 0);
-
     const finalTotal = Math.max(0, stats.salonHalfTotal - salonDeduct) + retailFinal + maskTotal;
     const totalSaving = salonDeduct + retailDiscount;
 
@@ -337,12 +301,7 @@ const App = () => {
   const IsolatedInput = React.memo(({ id, initialQty, onUpdate, isMini }) => {
     const [inputValue, setInputValue] = useState(initialQty === 0 ? "" : initialQty.toString());
     useLayoutEffect(() => { setInputValue(initialQty === 0 ? "" : initialQty.toString()); }, [initialQty]);
-    const handleKeyDown = (e) => {
-        if (e.key === 'Enter') {
-            onUpdate(id, inputValue);
-            e.target.blur();
-        }
-    };
+    const handleKeyDown = (e) => { if (e.key === 'Enter') { onUpdate(id, inputValue); e.target.blur(); } };
     return (
       <input 
         type="number" pattern="\d*" inputMode="numeric"
@@ -356,33 +315,18 @@ const App = () => {
   });
 
   const QuantitySelector = ({ id, qty, isMini = false }) => (
-    <div className={`flex items-center rounded-xl border ${isMini ? 'bg-white/10 border-white/20 p-0.5' : 'bg-gray-100 border-gray-200 p-1 lg:p-2'}`}>
-      <button onClick={() => updateQty(id, (qty || 0) - 1)} className={`${isMini ? 'w-8 h-8 lg:w-10 lg:h-10 text-white/70' : 'w-10 h-10 lg:w-14 lg:h-14 text-gray-500'} flex items-center justify-center active:bg-black/10 rounded-lg transition-colors`}>
-        <Minus size={isMini ? 14 : 20}/>
-      </button>
+    <div className={`flex items-center rounded-xl border ${isMini ? 'bg-white/10 border-white/20 p-1' : 'bg-gray-100 border-gray-200 p-1.5'}`}>
+      <button onClick={() => updateQty(id, (qty || 0) - 1)} className={`${isMini ? 'w-8 h-8 lg:w-10 lg:h-10 text-white/70' : 'w-10 h-10 lg:w-14 lg:h-14 text-gray-500'} flex items-center justify-center active:bg-black/10 rounded-lg`}><Minus size={isMini ? 16 : 22}/></button>
       <IsolatedInput id={id} initialQty={qty || 0} onUpdate={updateQty} isMini={isMini} />
-      <button onClick={() => updateQty(id, (qty || 0) + 1)} className={`${isMini ? 'w-8 h-8 lg:w-10 lg:h-10 text-white/70' : 'w-10 h-10 lg:w-14 lg:h-14 text-gray-500'} flex items-center justify-center active:bg-black/10 rounded-lg transition-colors`}>
-        <Plus size={isMini ? 14 : 20}/>
-      </button>
+      <button onClick={() => updateQty(id, (qty || 0) + 1)} className={`${isMini ? 'w-8 h-8 lg:w-10 lg:h-10 text-white/70' : 'w-10 h-10 lg:w-14 lg:h-14 text-gray-500'} flex items-center justify-center active:bg-black/10 rounded-lg`}><Plus size={isMini ? 16 : 22}/></button>
     </div>
   );
 
   const handleFinalOrder = () => {
-    let msg = `INFINITY CHEMICAL 訂單確認：\n`;
-    msg += `------------------------------------------\n`;
-    msg += `公司：${customerInfo.company || '未提供'}\n`;
-    msg += `聯絡人：${customerInfo.contact || '未提供'}\n`;
-    msg += `電話：${customerInfo.phone || '未提供'}\n`;
-    msg += `------------------------------------------\n`;
-    cartSummary.itemsList.forEach(i => { 
-      msg += `${i.id || 'N/A'} | ${i.name} | ${i.unitPrice.toFixed(2)} | ${i.qty} | ${i.subtotal.toFixed(2)}\n`; 
-    });
-    if (promos.totalSaving > 0) {
-      msg += `------------------------------------------\n`;
-      msg += `優惠已扣減：-HK$ ${promos.totalSaving.toFixed(2)}\n`;
-    }
-    msg += `------------------------------------------\n`;
-    msg += `應付總額：HK$ ${promos.grandTotal.toFixed(2)}`;
+    let msg = `INFINITY CHEMICAL 訂單確認：\n------------------------------------------\n公司：${customerInfo.company || '未提供'}\n聯絡人：${customerInfo.contact || '未提供'}\n電話：${customerInfo.phone || '未提供'}\n------------------------------------------\n`;
+    cartSummary.itemsList.forEach(i => { msg += `${i.id || 'N/A'} | ${i.name} | ${i.unitPrice.toFixed(2)} | ${i.qty} | ${i.subtotal.toFixed(2)}\n`; });
+    if (promos.totalSaving > 0) msg += `------------------------------------------\n優惠已扣減：-HK$ ${promos.totalSaving.toFixed(2)}\n`;
+    msg += `------------------------------------------\n應付總額：HK$ ${promos.grandTotal.toFixed(2)}`;
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`);
   };
 
@@ -390,11 +334,8 @@ const App = () => {
 
   const CartContent = ({ isSidebar = false }) => (
     <div className={`space-y-6 lg:space-y-8 ${isSidebar ? 'p-0' : 'px-6 lg:px-10 pb-12'}`}>
-      {/* 聯絡資料 */}
       <div id="customer-form" className="space-y-4 bg-white/5 p-5 lg:p-8 rounded-[1.5rem] lg:rounded-[2.5rem] border border-white/10 shadow-inner">
-        <div className="text-[12px] lg:text-[14px] font-black text-emerald-400 uppercase tracking-[0.2em] flex items-center gap-2 mb-2 lg:mb-4">
-          <Tag size={16} /> 聯絡資料 (可選)
-        </div>
+        <div className="text-[12px] lg:text-[14px] font-black text-emerald-400 uppercase tracking-[0.2em] flex items-center gap-2 mb-2 lg:mb-4"><Tag size={16} /> 聯絡資料 (可選)</div>
         <div className="space-y-3 lg:space-y-5">
           <div className="relative group">
               <Building2 size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
@@ -411,32 +352,24 @@ const App = () => {
         </div>
       </div>
 
-      {/* 優惠進度 */}
       <div className="space-y-4 lg:space-y-6">
-        <div className="text-[12px] lg:text-[16px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
-          <Tag size={18} className="text-blue-400" /> 優惠進度
-        </div>
+        <div className="text-[12px] lg:text-[16px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2"><Maximize2 size={18} className="text-blue-400" /> 優惠進度</div>
         {promos.progress.map(p => (
           <div key={p.id} className="space-y-3 lg:space-y-4 bg-white/5 p-4 lg:p-6 rounded-xl lg:rounded-2xl border border-white/5">
             <div className="flex justify-between items-center gap-4">
               <span className="text-[13px] lg:text-[18px] font-extrabold text-white tracking-wide">{p.label}</span>
               <span className="text-[11px] lg:text-[14px] font-bold text-emerald-400 text-right">{p.current}</span>
             </div>
-            <div className="h-2 lg:h-3 bg-white/10 rounded-full overflow-hidden">
-              <div className={`h-full ${p.color} transition-all duration-1000`} style={{ width: `${p.percent}%` }} />
-            </div>
+            <div className="h-2 lg:h-3 bg-white/10 rounded-full overflow-hidden"><div className={`h-full ${p.color} transition-all duration-1000`} style={{ width: `${p.percent}%` }} /></div>
           </div>
         ))}
       </div>
 
-      {/* 已選購產品 */}
       <div className="space-y-4 lg:space-y-6">
-        <div className="text-[12px] lg:text-[16px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-white/10 pb-2 flex items-center gap-2">
-          <ShoppingCart size={18} /> 已選產品 ({cartSummary.itemsList.length})
-        </div>
+        <div className="text-[12px] lg:text-[16px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-white/10 pb-2 flex items-center gap-2"><ShoppingCart size={20} /> 已選產品 ({cartSummary.itemsList.length})</div>
         <div className="space-y-3 lg:space-y-5">
           {cartSummary.itemsList.map(i => (
-            <div key={i.id || i.name} className="bg-white/5 p-4 lg:p-6 rounded-xl lg:rounded-2xl flex items-center justify-between gap-4 border border-white/5">
+            <div key={i.id || i.name} className="bg-white/5 p-4 lg:p-6 rounded-xl lg:rounded-2xl flex items-center justify-between gap-4 border border-white/5 shadow-xl">
               <div className="flex flex-col flex-1 min-w-0">
                 <span className="text-white font-black text-[14px] lg:text-[20px] truncate mb-1">{i.name}</span>
                 <span className="text-[11px] lg:text-[15px] text-slate-400 font-mono font-bold">單價 ${i.unitPrice.toFixed(2)} | 小計 ${i.subtotal.toFixed(2)}</span>
@@ -475,7 +408,7 @@ const App = () => {
             {Object.entries(DATA).map(([k, v]) => (
               <button key={k} onClick={() => setActiveTab(k)} className={`pb-2 lg:pb-5 text-[12px] lg:text-[22px] tracking-[0.2em] relative whitespace-nowrap transition-all uppercase ${activeTab === k ? 'text-black font-extrabold' : 'text-slate-400 font-bold hover:text-slate-600'}`}>
                 {v.label}
-                {activeTab === k && <div className="absolute bottom-0 left-0 w-full h-1 lg:h-2 bg-rose-500 rounded-t-full shadow-[0_-4px_10px_rgba(244,63,94,0.3)]" />}
+                {activeTab === k && <div className="absolute bottom-0 left-0 w-full h-1 lg:h-2 bg-rose-500 rounded-t-full" />}
               </button>
             ))}
           </nav>
@@ -493,7 +426,6 @@ const App = () => {
       </div>
 
       <main className="max-w-7xl mx-auto px-4 lg:px-10 py-6 lg:py-16 flex flex-col lg:flex-row gap-10 lg:gap-16" style={{ transform: `scale(${zoomScale})`, transformOrigin: 'top left', width: `${100/zoomScale}%` }}>
-        {/* 左邊：產品清單 */}
         <div className="flex-1 space-y-4 lg:space-y-8">
           {(DATA[activeTab].items[activeSubTab] || []).map((item) => (
             <div key={item.id || item.name} className="bg-white p-5 lg:p-10 rounded-2xl lg:rounded-[3rem] border border-slate-100 shadow-md flex justify-between items-center hover:shadow-2xl transition-all duration-500">
@@ -504,17 +436,11 @@ const App = () => {
                   <span className="text-[11px] lg:text-[16px] font-black text-slate-400">$</span>
                   {activeTab === 'salon' ? (
                     <div className="flex items-center gap-4 lg:gap-8">
-                      <span className="text-rose-500 font-mono text-sm lg:text-2xl line-through decoration-rose-600 decoration-2 italic opacity-40">
-                        {item.price.toFixed(2)}
-                      </span>
-                      <span className="text-slate-900 font-mono text-lg lg:text-3xl font-black tracking-tighter bg-yellow-100 px-2 lg:px-4 rounded-xl shadow-inner">
-                        {(item.price/2).toFixed(2)}
-                      </span>
+                      <span className="text-rose-500 font-mono text-sm lg:text-2xl line-through decoration-rose-600 decoration-2 italic opacity-40">{item.price.toFixed(2)}</span>
+                      <span className="text-slate-900 font-mono text-lg lg:text-3xl font-black tracking-tighter bg-yellow-100 px-2 lg:px-4 rounded-xl">{(item.price/2).toFixed(2)}</span>
                     </div>
                   ) : (
-                    <span className="text-slate-900 font-mono text-lg lg:text-3xl font-black tracking-tighter">
-                      {item.price.toFixed(2)}
-                    </span>
+                    <span className="text-slate-900 font-mono text-lg lg:text-3xl font-black tracking-tighter">{item.price.toFixed(2)}</span>
                   )}
                 </div>
               </div>
@@ -527,55 +453,60 @@ const App = () => {
         <div className="hidden lg:block w-[550px] shrink-0">
           <div className="sticky top-60 bg-slate-900 text-white rounded-[4rem] p-12 lg:p-16 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.5)] border border-white/10 overflow-hidden flex flex-col max-h-[calc(100vh-280px)]">
             <div className="flex items-center gap-6 mb-12 border-b border-white/10 pb-10">
-                <div className="bg-rose-500 p-5 rounded-2xl shadow-2xl shadow-rose-500/40">
-                    <ShoppingCart size={36} className="text-white" />
-                </div>
+                <div className="bg-rose-500 p-5 rounded-2xl shadow-2xl shadow-rose-500/40"><ShoppingCart size={36} className="text-white" /></div>
                 <h3 className="text-4xl font-black tracking-tight">落單清單</h3>
             </div>
             <div className="flex-1 overflow-y-auto custom-scrollbar pr-4"><CartContent isSidebar={true} /></div>
             <div className="pt-12 border-t border-white/10 mt-12 space-y-10">
                 <div className="flex justify-between items-end">
                     <span className="text-[16px] text-slate-500 font-black uppercase tracking-[0.4em]">應付總額</span>
-                    <span className="text-6xl font-mono font-black text-white leading-none tracking-tighter">
-                        <span className="text-2xl font-sans mr-3 text-slate-500">HK$</span>
-                        {promos.grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                    </span>
+                    <span className="text-6xl font-mono font-black text-white leading-none tracking-tighter"><span className="text-2xl font-sans mr-3 text-slate-500">HK$</span>{promos.grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                 </div>
-                <button onClick={handleFinalOrder} className="w-full bg-emerald-500 hover:bg-emerald-400 text-white shadow-2xl shadow-emerald-500/40 active:scale-95 py-10 rounded-[2.5rem] font-black text-3xl flex items-center justify-center gap-6 transition-all duration-300">
-                    <MessageCircle size={36} /> WhatsApp 落單
-                </button>
+                <button onClick={handleFinalOrder} className="w-full bg-emerald-500 hover:bg-emerald-400 text-white shadow-2xl active:scale-95 py-10 rounded-[2.5rem] font-black text-3xl flex items-center justify-center gap-6 transition-all duration-300"><MessageCircle size={36} /> WhatsApp 落單</button>
             </div>
           </div>
         </div>
       </main>
 
-      {/* 手機版底部抽屜 */}
-      <div className={`lg:hidden fixed bottom-0 left-0 right-0 z-[60] transition-all duration-500 ease-out transform ${hasItems ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'}`}>
-        <div className="max-w-2xl mx-auto px-4 pb-10">
-          <div className="bg-slate-900 text-white rounded-[2.5rem] shadow-2xl border border-white/10 overflow-hidden">
-            <div className="relative">
-                <button onClick={() => setIsExpanded(!isExpanded)} className="w-full py-6 flex flex-col items-center gap-2 active:bg-white/5 transition-colors">
-                    <div className="w-16 h-1.5 bg-white/20 rounded-full mb-1" />
-                    <div className="text-[11px] tracking-[0.3em] font-black text-slate-400 uppercase flex items-center gap-3">
-                        {isExpanded ? '收起清單' : '落單及填寫資料'} 
-                        {isExpanded ? <ChevronDown size={18} /> : <ChevronUp size={18} />}
-                    </div>
-                </button>
-                {isExpanded && <button onClick={() => setIsExpanded(false)} className="absolute right-8 top-6 p-2 bg-white/10 rounded-full text-white/50 active:scale-90"><X size={20} /></button>}
+      {/* 手機版：專用底部「迷你 Bar」及彈出層 */}
+      <div className={`lg:hidden fixed bottom-0 left-0 right-0 z-[60] transition-transform duration-500 ${hasItems ? 'translate-y-0' : 'translate-y-full'}`}>
+        
+        {/* 全屏彈出層 (Expanded) */}
+        <div className={`fixed inset-0 bg-slate-950/90 backdrop-blur-xl transition-all duration-300 ${isExpanded ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+          <div className="h-full flex flex-col pt-6">
+            <div className="px-6 flex justify-between items-center mb-4">
+              <h3 className="text-white text-xl font-black flex items-center gap-2"><ShoppingCart className="text-rose-500" /> 落單清單</h3>
+              {/* 超大關閉掣 */}
+              <button onClick={() => setIsExpanded(false)} className="bg-white/10 p-3 rounded-full text-white active:bg-rose-500 transition-colors"><X size={28} /></button>
             </div>
-            <div className={`transition-all duration-500 ease-in-out overflow-y-auto custom-scrollbar ${isExpanded ? 'max-h-[75vh]' : 'max-h-0'}`}><CartContent isSidebar={false} /></div>
-            <div className="px-8 py-8 bg-black/40 backdrop-blur-md flex items-center justify-between border-t border-white/10 shadow-2xl">
-              <div className="flex flex-col">
-                <span className="text-[10px] text-slate-500 font-black uppercase tracking-[0.3em] mb-1">應付總額</span>
-                <span className="text-2xl font-mono font-black text-white tracking-tighter leading-none">
-                  {promos.grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                </span>
+            <div className="flex-1 overflow-y-auto"><CartContent isSidebar={false} /></div>
+            <div className="p-8 bg-slate-900 border-t border-white/10">
+              <div className="flex justify-between items-center mb-6">
+                <div className="flex flex-col">
+                  <span className="text-[10px] text-slate-500 font-black uppercase tracking-widest">應付總額</span>
+                  <span className="text-3xl font-mono font-black text-white">HK$ {promos.grandTotal.toFixed(2)}</span>
+                </div>
+                <button onClick={handleFinalOrder} className="bg-emerald-500 text-white px-8 py-4 rounded-2xl font-black text-lg shadow-xl active:scale-95">落單</button>
               </div>
-              <button onClick={handleFinalOrder} className="bg-emerald-500 text-white shadow-2xl shadow-emerald-500/40 px-8 py-5 rounded-2xl font-black text-base flex items-center gap-3 active:scale-95">
-                落單
-              </button>
             </div>
           </div>
+        </div>
+
+        {/* 迷你黑金 Bar (Collapsed) */}
+        <div className={`mx-4 mb-6 transition-all duration-300 ${isExpanded ? 'translate-y-20 opacity-0' : 'translate-y-0 opacity-100'}`}>
+          <button onClick={() => setIsExpanded(true)} className="w-full bg-slate-900 text-white rounded-full py-4 px-6 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10 flex items-center justify-between active:scale-95 transition-transform">
+            <div className="flex items-center gap-3">
+              <div className="bg-rose-500 p-2 rounded-full relative">
+                <ShoppingCart size={18} />
+                <span className="absolute -top-1 -right-1 bg-white text-rose-500 text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full border border-rose-500">{cartSummary.itemsList.length}</span>
+              </div>
+              <span className="text-xs font-black tracking-widest uppercase text-slate-400">查看清單 / 落單</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-lg font-mono font-black text-white">HK$ {promos.grandTotal.toFixed(2)}</span>
+              <ChevronUp size={20} className="text-rose-500 animate-bounce" />
+            </div>
+          </button>
         </div>
       </div>
 
