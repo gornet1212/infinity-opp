@@ -284,23 +284,27 @@ const App = () => {
     let salonLabel = "";
     let salonTarget = 800;
     let salonDeduct = 0;
-    
-    if (stats.salonHalfTotal >= 2300) {
+    let salonPercent = 0;
+
+    const total = stats.salonHalfTotal;
+
+    // --- 美容院裝進度條邏輯優化 ---
+    if (total >= 1600) {
       salonLabel = "已享有 $1600 送 $700 優惠";
-      salonTarget = 2300;
       salonDeduct = 700;
-    } else if (stats.salonHalfTotal >= 1600) {
-      salonLabel = `重有 $${(2300 - stats.salonHalfTotal).toFixed(0)} 嘅貨免費送出`;
-      salonTarget = 2300;
-      salonDeduct = 0;
-    } else if (stats.salonHalfTotal >= 800) {
-      salonLabel = `已有 $800 送 $200 優惠，仲差 $${(1600 - stats.salonHalfTotal).toFixed(0)} 升級`;
-      salonTarget = 1600;
+      salonPercent = 100;
+    } else if (total >= 1100) {
+      salonLabel = `已有 $800 優惠，仲差 $${(1600 - total).toFixed(2)} 升級 $700 優惠`;
       salonDeduct = 200;
+      salonPercent = (total / 1600) * 100;
+    } else if (total >= 800) {
+      salonLabel = "已享有 $800 送 $200 優惠";
+      salonDeduct = 200;
+      salonPercent = 100; // $800時顯示成條BAR
     } else {
-      salonLabel = `$800 送 $200 優惠提示：重有 $${(800 - stats.salonHalfTotal).toFixed(0)} 貨可以攞`;
-      salonTarget = 800;
+      salonLabel = `美容院裝 (半價再送) 仲差 $${(800 - total).toFixed(2)} 攞 $200 貨`;
       salonDeduct = 0;
+      salonPercent = (total / 800) * 100;
     }
 
     const retailDiscount = stats.retailCount >= 6 ? stats.retailTotal * 0.2 : 0;
@@ -311,9 +315,9 @@ const App = () => {
     const totalSaving = salonDeduct + retailDiscount;
 
     const progress = [
-      { id: 'salon', show: stats.salonHalfTotal > 0, label: '美容院裝 (半價再送)', current: salonLabel, percent: Math.min(100, (stats.salonHalfTotal / salonTarget) * 100), color: 'bg-rose-500' },
+      { id: 'salon', show: stats.salonHalfTotal > 0, label: '美容院裝 (半價再送)', current: salonLabel, percent: Math.min(100, salonPercent), color: 'bg-rose-500' },
       { id: 'retail', show: stats.retailCount > 0, label: '客貨裝 (6件8折)', current: stats.retailCount >= 6 ? '已享 8 折' : `還差 ${6 - stats.retailCount} 件享折`, percent: Math.min(100, (stats.retailCount / 6) * 100), color: 'bg-emerald-500' },
-      { id: 'mask_n', show: stats.maskNormalCount > 0, label: `面膜 (${stats.maskNormalCount}張)`, current: nInfo.nextTierQty ? `差 ${nInfo.diff} 張每片 $${nInfo.nextTierPrice}` : `已享最低價`, percent: Math.min(100, (stats.maskNormalCount / (nInfo.nextTierQty || 1000)) * 100), color: 'bg-blue-500' }
+      { id: 'mask_n', show: stats.maskNormalCount > 0, label: `面膜 (${stats.maskNormalCount}張)`, current: nInfo.nextTierQty ? `差 ${nInfo.diff} 張每片 $${nInfo.nextTierPrice.toFixed(2)}` : `已享最低價`, percent: Math.min(100, (stats.maskNormalCount / (nInfo.nextTierQty || 1000)) * 100), color: 'bg-blue-500' }
     ].filter(p => p.show);
 
     return { grandTotal: finalTotal, totalSaving, progress };
@@ -326,11 +330,7 @@ const App = () => {
 
   const IsolatedInput = React.memo(({ id, initialQty, onUpdate, isMini }) => {
     const [inputValue, setInputValue] = useState(initialQty === 0 ? "" : initialQty.toString());
-    
-    useLayoutEffect(() => { 
-        setInputValue(initialQty === 0 ? "" : initialQty.toString()); 
-    }, [initialQty]);
-
+    useLayoutEffect(() => { setInputValue(initialQty === 0 ? "" : initialQty.toString()); }, [initialQty]);
     const handleChange = (e) => setInputValue(e.target.value);
     const handleBlur = () => onUpdate(id, inputValue);
     const handleKeyDown = (e) => {
@@ -339,14 +339,11 @@ const App = () => {
             e.target.blur();
         }
     };
-
     return (
       <input 
         type="number" pattern="\d*" inputMode="numeric"
         value={inputValue} placeholder="0"
-        onChange={handleChange} 
-        onBlur={handleBlur}
-        onKeyDown={handleKeyDown}
+        onChange={handleChange} onBlur={handleBlur} onKeyDown={handleKeyDown}
         className={`mobile-input ${isMini ? 'w-10 text-[13px] text-white' : 'w-12 text-[15px] text-black'} text-center bg-transparent font-black focus:outline-none`} 
       />
     );
@@ -365,7 +362,6 @@ const App = () => {
   );
 
   const handleFinalOrder = () => {
-    // 移除強制攔截，令客人唔填資料都可以落單
     let msg = `INFINITY CHEMICAL 訂單確認：\n`;
     msg += `------------------------------------------\n`;
     msg += `公司：${customerInfo.company || '未提供'}\n`;
@@ -422,7 +418,7 @@ const App = () => {
           <div key={p.id} className="space-y-2 bg-white/5 p-4 rounded-2xl border border-white/5">
             <div className="flex justify-between items-center gap-4">
               <span className="text-[12px] font-extrabold text-white tracking-wide">{p.label}</span>
-              <span className="text-[10px] font-bold text-emerald-400">{p.current}</span>
+              <span className="text-[10px] font-bold text-emerald-400 text-right">{p.current}</span>
             </div>
             <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
               <div className={`h-full ${p.color} transition-all duration-1000`} style={{ width: `${p.percent}%` }} />
@@ -495,11 +491,9 @@ const App = () => {
                   <span className="text-[10px] font-bold text-slate-400">$</span>
                   {activeTab === 'salon' ? (
                     <div className="flex items-center gap-3">
-                      {/* 原價刪除線 (模擬紅筆劃掉) */}
                       <span className="text-rose-500 font-mono text-sm line-through decoration-rose-600 decoration-2 italic opacity-60">
                         {item.price.toFixed(2)}
                       </span>
-                      {/* 半價後價錢 */}
                       <span className="text-slate-900 font-mono text-base font-black tracking-tight bg-yellow-100 px-1">
                         {(item.price/2).toFixed(2)}
                       </span>
@@ -560,11 +554,9 @@ const App = () => {
                     </button>
                 )}
             </div>
-
             <div className={`transition-all duration-500 ease-in-out overflow-y-auto custom-scrollbar ${isExpanded ? 'max-h-[75vh]' : 'max-h-0'}`}>
                 <CartContent isSidebar={false} />
             </div>
-
             <div className="px-10 py-8 bg-black/40 backdrop-blur-md flex items-center justify-between border-t border-white/10 shadow-2xl">
               <div className="flex flex-col">
                 <span className="text-[9px] text-slate-500 font-black uppercase tracking-[0.2em] mb-1">應付總額</span>
