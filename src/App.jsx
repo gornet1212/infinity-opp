@@ -13,11 +13,10 @@ import {
   ShoppingCart,
   X,
   Maximize2,
-  Minimize2,
-  Search
+  Minimize2
 } from 'lucide-react';
 
-// --- 完整資料庫 ---
+// --- 資料庫 ---
 const DATA = {
   mask: {
     label: "面膜紙",
@@ -210,7 +209,7 @@ const App = () => {
   const [activeSubTab, setActiveSubTab] = useState('');
   const [cart, setCart] = useState({});
   const [isExpanded, setIsExpanded] = useState(false);
-  const [zoomScale, setZoomScale] = useState(1);
+  const [zoomScale, setZoomScale] = useState(1); 
   
   const [customerInfo, setCustomerInfo] = useState({
     company: '',
@@ -296,18 +295,16 @@ const App = () => {
       salonDeduct = 700;
       salonPercent = 100;
     } else if (totalVal >= 1600) {
-      const freeMax = 2300;
-      salonLabel = `已扣減 $700，仲可以揀多 $${(freeMax - totalVal).toFixed(2)} 免費貨`;
-      salonDeduct = totalVal - 1600; // 鎖死喺 1600
+      salonLabel = `已扣減 $700，仲可以揀多 $${(2300 - totalVal).toFixed(2)} 免費貨`;
+      salonDeduct = totalVal - 1600; 
       salonPercent = 100;
     } else if (totalVal >= 1000) {
       salonLabel = `已享 $200 優惠，仲差 $${(1600 - totalVal).toFixed(2)} 享 $700 優惠`;
       salonDeduct = 200;
       salonPercent = (totalVal / 1600) * 100;
     } else if (totalVal >= 800) {
-      const freeMax = 1000;
-      salonLabel = `已扣減 $200，仲可以揀多 $${(freeMax - totalVal).toFixed(2)} 免費貨`;
-      salonDeduct = totalVal - 800; // 鎖死喺 800
+      salonLabel = `已扣減 $200，仲可以揀多 $${(1000 - totalVal).toFixed(2)} 免費貨`;
+      salonDeduct = totalVal - 800; 
       salonPercent = 100;
     } else {
       salonLabel = `仲差 $${(800 - totalVal).toFixed(2)} 享 $800 送 $200 優惠`;
@@ -323,7 +320,7 @@ const App = () => {
     const totalSaving = salonDeduct + retailDiscount;
 
     const progress = [
-      { id: 'salon', show: stats.salonHalfTotal > 0, label: `美容院裝 (已揀$${totalVal.toFixed(2)})`, current: salonLabel, percent: Math.min(100, salonPercent), color: 'bg-rose-500' },
+      { id: 'salon', show: stats.salonHalfTotal > 0, label: `美容院裝 (貨值:$${totalVal.toFixed(2)})`, current: salonLabel, percent: Math.min(100, salonPercent), color: 'bg-rose-500' },
       { id: 'retail', show: stats.retailCount > 0, label: '客貨裝 (6件8折)', current: stats.retailCount >= 6 ? '已享 8 折' : `還差 ${6 - stats.retailCount} 件享折`, percent: Math.min(100, (stats.retailCount / 6) * 100), color: 'bg-emerald-500' },
       { id: 'mask_n', show: stats.maskNormalCount > 0, label: `一般面膜 (${stats.maskNormalCount}張)`, current: nInfo.nextTierQty ? `差 ${nInfo.diff} 張每片 $${nInfo.nextTierPrice.toFixed(2)}` : `已享最低價`, percent: Math.min(100, (stats.maskNormalCount / (nInfo.nextTierQty || 1000)) * 100), color: 'bg-blue-500' },
       { id: 'mask_s', show: stats.maskSerumCount > 0, label: `精華面膜 (${stats.maskSerumCount}張)`, current: sInfo.nextTierQty ? `差 ${sInfo.diff} 張每片 $${sInfo.nextTierPrice.toFixed(2)}` : `已享最低價`, percent: Math.min(100, (stats.maskSerumCount / (sInfo.nextTierQty || 1000)) * 100), color: 'bg-indigo-500' }
@@ -353,19 +350,19 @@ const App = () => {
         onChange={(e) => setInputValue(e.target.value)} 
         onBlur={() => onUpdate(id, inputValue)}
         onKeyDown={handleKeyDown}
-        className={`mobile-input ${isMini ? 'w-12 text-[18px] text-white' : 'w-14 text-[20px] text-black'} text-center bg-transparent font-black focus:outline-none`} 
+        className={`mobile-input ${isMini ? 'w-10 lg:w-12 text-[14px] lg:text-[18px]' : 'w-12 lg:w-16 text-[16px] lg:text-[22px]'} text-center bg-transparent font-black focus:outline-none text-slate-900`} 
       />
     );
   });
 
   const QuantitySelector = ({ id, qty, isMini = false }) => (
-    <div className={`flex items-center rounded-xl border ${isMini ? 'bg-white/10 border-white/20 p-1' : 'bg-gray-50 border-gray-200 p-1.5'}`}>
-      <button onClick={() => updateQty(id, (qty || 0) - 1)} className={`${isMini ? 'w-10 h-10 text-white/70' : 'w-12 h-12 text-gray-500'} flex items-center justify-center active:bg-black/10 rounded-lg`}>
-        <Minus size={isMini ? 16 : 22}/>
+    <div className={`flex items-center rounded-xl border ${isMini ? 'bg-white/10 border-white/20 p-0.5' : 'bg-gray-100 border-gray-200 p-1 lg:p-2'}`}>
+      <button onClick={() => updateQty(id, (qty || 0) - 1)} className={`${isMini ? 'w-8 h-8 lg:w-10 lg:h-10 text-white/70' : 'w-10 h-10 lg:w-14 lg:h-14 text-gray-500'} flex items-center justify-center active:bg-black/10 rounded-lg transition-colors`}>
+        <Minus size={isMini ? 14 : 20}/>
       </button>
       <IsolatedInput id={id} initialQty={qty || 0} onUpdate={updateQty} isMini={isMini} />
-      <button onClick={() => updateQty(id, (qty || 0) + 1)} className={`${isMini ? 'w-10 h-10 text-white/70' : 'w-12 h-12 text-gray-500'} flex items-center justify-center active:bg-black/10 rounded-lg`}>
-        <Plus size={isMini ? 16 : 22}/>
+      <button onClick={() => updateQty(id, (qty || 0) + 1)} className={`${isMini ? 'w-8 h-8 lg:w-10 lg:h-10 text-white/70' : 'w-10 h-10 lg:w-14 lg:h-14 text-gray-500'} flex items-center justify-center active:bg-black/10 rounded-lg transition-colors`}>
+        <Plus size={isMini ? 14 : 20}/>
       </button>
     </div>
   );
@@ -392,58 +389,61 @@ const App = () => {
   const hasItems = Object.values(cart).some(v => v > 0);
 
   const CartContent = ({ isSidebar = false }) => (
-    <div className={`space-y-8 ${isSidebar ? 'p-0' : 'px-8 pb-12'}`}>
-      <div id="customer-form" className="space-y-4 bg-white/5 p-6 rounded-[2rem] border border-white/10 shadow-inner">
-        <div className="text-[14px] font-black text-emerald-400 uppercase tracking-[0.2em] flex items-center gap-2 mb-4">
-          <Tag size={18} /> 聯絡資料 (可選)
+    <div className={`space-y-6 lg:space-y-8 ${isSidebar ? 'p-0' : 'px-6 lg:px-10 pb-12'}`}>
+      {/* 聯絡資料 */}
+      <div id="customer-form" className="space-y-4 bg-white/5 p-5 lg:p-8 rounded-[1.5rem] lg:rounded-[2.5rem] border border-white/10 shadow-inner">
+        <div className="text-[12px] lg:text-[14px] font-black text-emerald-400 uppercase tracking-[0.2em] flex items-center gap-2 mb-2 lg:mb-4">
+          <Tag size={16} /> 聯絡資料 (可選)
         </div>
-        <div className="space-y-4">
+        <div className="space-y-3 lg:space-y-5">
           <div className="relative group">
-              <Building2 size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-emerald-400" />
-              <input type="text" placeholder="公司名稱" className="w-full bg-black/40 border border-white/10 rounded-2xl py-5 pl-14 pr-4 text-lg focus:border-emerald-500 outline-none placeholder:text-slate-600 text-white" value={customerInfo.company} onChange={(e) => setCustomerInfo({...customerInfo, company: e.target.value})} />
+              <Building2 size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
+              <input type="text" placeholder="公司名稱" className="w-full bg-black/40 border border-white/10 rounded-xl lg:rounded-2xl py-3 lg:py-5 pl-12 lg:pl-14 pr-4 text-sm lg:text-lg focus:border-emerald-500 outline-none text-white" value={customerInfo.company} onChange={(e) => setCustomerInfo({...customerInfo, company: e.target.value})} />
           </div>
           <div className="relative group">
-              <User size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-emerald-400" />
-              <input type="text" placeholder="聯絡人姓名" className="w-full bg-black/40 border border-white/10 rounded-2xl py-5 pl-14 pr-4 text-lg focus:border-emerald-500 outline-none placeholder:text-slate-600 text-white" value={customerInfo.contact} onChange={(e) => setCustomerInfo({...customerInfo, contact: e.target.value})} />
+              <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
+              <input type="text" placeholder="聯絡人姓名" className="w-full bg-black/40 border border-white/10 rounded-xl lg:rounded-2xl py-3 lg:py-5 pl-12 lg:pl-14 pr-4 text-sm lg:text-lg focus:border-emerald-500 outline-none text-white" value={customerInfo.contact} onChange={(e) => setCustomerInfo({...customerInfo, contact: e.target.value})} />
           </div>
           <div className="relative group">
-              <Phone size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-emerald-400" />
-              <input type="tel" placeholder="電話號碼" className="w-full bg-black/40 border border-white/10 rounded-2xl py-5 pl-14 pr-4 text-lg focus:border-emerald-500 outline-none placeholder:text-slate-600 text-white" value={customerInfo.phone} onChange={(e) => setCustomerInfo({...customerInfo, phone: e.target.value})} />
+              <Phone size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
+              <input type="tel" placeholder="電話號碼" className="w-full bg-black/40 border border-white/10 rounded-xl lg:rounded-2xl py-3 lg:py-5 pl-12 lg:pl-14 pr-4 text-sm lg:text-lg focus:border-emerald-500 outline-none text-white" value={customerInfo.phone} onChange={(e) => setCustomerInfo({...customerInfo, phone: e.target.value})} />
           </div>
         </div>
       </div>
 
-      <div className="space-y-6">
-        <div className="text-[14px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
-          <Maximize2 size={18} className="text-blue-400" /> 優惠詳情
+      {/* 優惠進度 */}
+      <div className="space-y-4 lg:space-y-6">
+        <div className="text-[12px] lg:text-[16px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
+          <Tag size={18} className="text-blue-400" /> 優惠進度
         </div>
         {promos.progress.map(p => (
-          <div key={p.id} className="space-y-4 bg-white/5 p-6 rounded-2xl border border-white/5">
+          <div key={p.id} className="space-y-3 lg:space-y-4 bg-white/5 p-4 lg:p-6 rounded-xl lg:rounded-2xl border border-white/5">
             <div className="flex justify-between items-center gap-4">
-              <span className="text-[16px] font-extrabold text-white tracking-wide">{p.label}</span>
-              <span className="text-[13px] font-bold text-emerald-400 text-right">{p.current}</span>
+              <span className="text-[13px] lg:text-[18px] font-extrabold text-white tracking-wide">{p.label}</span>
+              <span className="text-[11px] lg:text-[14px] font-bold text-emerald-400 text-right">{p.current}</span>
             </div>
-            <div className="h-3 bg-white/10 rounded-full overflow-hidden">
-              <div className={`h-full ${p.color} transition-all duration-1000 shadow-[0_0_15px_rgba(244,63,94,0.3)]`} style={{ width: `${p.percent}%` }} />
+            <div className="h-2 lg:h-3 bg-white/10 rounded-full overflow-hidden">
+              <div className={`h-full ${p.color} transition-all duration-1000`} style={{ width: `${p.percent}%` }} />
             </div>
           </div>
         ))}
       </div>
 
-      <div className="space-y-6">
-        <div className="text-[14px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-white/10 pb-2 flex items-center gap-2">
-          <ShoppingCart size={20} /> 已選購產品 ({cartSummary.itemsList.length})
+      {/* 已選購產品 */}
+      <div className="space-y-4 lg:space-y-6">
+        <div className="text-[12px] lg:text-[16px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-white/10 pb-2 flex items-center gap-2">
+          <ShoppingCart size={18} /> 已選產品 ({cartSummary.itemsList.length})
         </div>
-        <div className="space-y-5">
+        <div className="space-y-3 lg:space-y-5">
           {cartSummary.itemsList.map(i => (
-            <div key={i.id || i.name} className="bg-white/5 p-6 rounded-2xl flex items-center justify-between gap-6 border border-white/5 shadow-xl hover:bg-white/[0.08] transition-colors">
+            <div key={i.id || i.name} className="bg-white/5 p-4 lg:p-6 rounded-xl lg:rounded-2xl flex items-center justify-between gap-4 border border-white/5">
               <div className="flex flex-col flex-1 min-w-0">
-                <span className="text-white font-black text-lg truncate mb-1">{i.name}</span>
-                <span className="text-[14px] text-slate-400 font-mono tracking-tight font-bold">單價 ${i.unitPrice.toFixed(2)} | 小計 ${i.subtotal.toFixed(2)}</span>
+                <span className="text-white font-black text-[14px] lg:text-[20px] truncate mb-1">{i.name}</span>
+                <span className="text-[11px] lg:text-[15px] text-slate-400 font-mono font-bold">單價 ${i.unitPrice.toFixed(2)} | 小計 ${i.subtotal.toFixed(2)}</span>
               </div>
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3 lg:gap-4">
                  <QuantitySelector id={i.id || i.name} qty={i.qty} isMini={true} />
-                 <button onClick={() => updateQty(i.id || i.name, 0)} className="text-slate-500 hover:text-rose-400 p-2 active:scale-90"><Trash2 size={24} /></button>
+                 <button onClick={() => updateQty(i.id || i.name, 0)} className="text-slate-600 hover:text-rose-400 transition-colors"><Trash2 size={24} /></button>
               </div>
             </div>
           ))}
@@ -453,11 +453,11 @@ const App = () => {
   );
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] text-slate-900 antialiased font-sans pb-40 lg:pb-0 transition-all duration-300 overflow-x-hidden" style={{ fontSize: `${zoomScale * 100}%` }}>
+    <div className="min-h-screen bg-[#F8F9FA] text-slate-900 antialiased font-sans transition-all duration-300 overflow-x-hidden">
       
-      {/* 比例尺調整桿 */}
-      <div className="fixed top-4 right-10 z-[100] group hidden md:block">
-        <div className="bg-white/90 backdrop-blur shadow-2xl border border-slate-200 rounded-full px-6 py-3 flex items-center gap-4 hover:scale-105 transition-all">
+      {/* 比例尺調整 (只喺電腦版顯示) */}
+      <div className="fixed top-6 right-10 z-[100] hidden lg:block">
+        <div className="bg-white/90 backdrop-blur shadow-2xl border border-slate-200 rounded-full px-6 py-3 flex items-center gap-4">
            <Minimize2 size={16} className="text-slate-400" />
            <input type="range" min="0.8" max="1.5" step="0.05" value={zoomScale} onChange={(e) => setZoomScale(parseFloat(e.target.value))} className="w-40 accent-rose-500 cursor-pointer" />
            <Maximize2 size={16} className="text-slate-400" />
@@ -466,55 +466,53 @@ const App = () => {
       </div>
 
       <header className="sticky top-0 bg-white/95 backdrop-blur-lg z-50 border-b border-slate-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-6">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="font-serif tracking-widest text-4xl font-black italic text-slate-900">INFINITY</h1>
-            <div className="flex items-center gap-4">
-              <span className="text-[12px] tracking-[0.3em] text-slate-400 font-bold uppercase border border-slate-200 px-4 py-2 rounded-full">Chemical Trading</span>
-            </div>
+        <div className="max-w-7xl mx-auto px-4 lg:px-10 py-4 lg:py-8">
+          <div className="flex justify-between items-center mb-4 lg:mb-8">
+            <h1 className="font-serif tracking-widest text-2xl lg:text-5xl font-black italic text-slate-900">INFINITY</h1>
+            <span className="text-[8px] lg:text-[14px] tracking-[0.3em] text-slate-400 font-bold uppercase border border-slate-200 px-3 py-1 lg:px-6 lg:py-3 rounded-full">Chemical Trading</span>
           </div>
-          <nav className="flex gap-12 overflow-x-auto no-scrollbar scroll-smooth">
+          <nav className="flex gap-6 lg:gap-14 overflow-x-auto no-scrollbar scroll-smooth">
             {Object.entries(DATA).map(([k, v]) => (
-              <button key={k} onClick={() => setActiveTab(k)} className={`pb-4 text-lg tracking-[0.25em] relative whitespace-nowrap transition-all uppercase ${activeTab === k ? 'text-black font-extrabold scale-110' : 'text-slate-400 font-bold hover:text-slate-600'}`}>
+              <button key={k} onClick={() => setActiveTab(k)} className={`pb-2 lg:pb-5 text-[12px] lg:text-[22px] tracking-[0.2em] relative whitespace-nowrap transition-all uppercase ${activeTab === k ? 'text-black font-extrabold' : 'text-slate-400 font-bold hover:text-slate-600'}`}>
                 {v.label}
-                {activeTab === k && <div className="absolute bottom-0 left-0 w-full h-2 bg-rose-500 rounded-t-full shadow-[0_-4px_10px_rgba(244,63,94,0.3)]" />}
+                {activeTab === k && <div className="absolute bottom-0 left-0 w-full h-1 lg:h-2 bg-rose-500 rounded-t-full shadow-[0_-4px_10px_rgba(244,63,94,0.3)]" />}
               </button>
             ))}
           </nav>
         </div>
       </header>
 
-      <div className="bg-white/50 backdrop-blur-sm border-b border-slate-200 sticky top-[128px] z-40 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 py-5 flex gap-4 overflow-x-auto no-scrollbar">
+      <div className="bg-white/50 backdrop-blur-sm border-b border-slate-200 sticky top-[95px] lg:top-[160px] z-40 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 lg:px-10 py-3 lg:py-6 flex gap-3 lg:gap-5 overflow-x-auto no-scrollbar">
           {DATA[activeTab].subCategories.map(c => (
-            <button key={c} onClick={() => setActiveSubTab(c)} className={`px-8 py-3 rounded-full text-[14px] font-black whitespace-nowrap border shadow-sm transition-all duration-300 ${activeSubTab === c ? 'bg-slate-900 text-white border-slate-900 scale-105 shadow-xl' : 'bg-white text-slate-500 border-slate-200 hover:border-slate-400'}`}>
+            <button key={c} onClick={() => setActiveSubTab(c)} className={`px-4 py-2 lg:px-10 lg:py-4 rounded-full text-[11px] lg:text-[18px] font-black whitespace-nowrap border shadow-sm transition-all duration-300 ${activeSubTab === c ? 'bg-slate-900 text-white border-slate-900 scale-105 shadow-xl' : 'bg-white text-slate-500 border-slate-200 hover:border-slate-400'}`}>
               {c}
             </button>
           ))}
         </div>
       </div>
 
-      <main className="max-w-7xl mx-auto px-6 py-12 flex flex-col lg:flex-row gap-12" style={{ transform: `scale(${zoomScale})`, transformOrigin: 'top left', width: `${100/zoomScale}%` }}>
-        {/* 左邊：產品清單 (更大字體) */}
-        <div className="flex-1 space-y-6">
+      <main className="max-w-7xl mx-auto px-4 lg:px-10 py-6 lg:py-16 flex flex-col lg:flex-row gap-10 lg:gap-16" style={{ transform: `scale(${zoomScale})`, transformOrigin: 'top left', width: `${100/zoomScale}%` }}>
+        {/* 左邊：產品清單 */}
+        <div className="flex-1 space-y-4 lg:space-y-8">
           {(DATA[activeTab].items[activeSubTab] || []).map((item) => (
-            <div key={item.id || item.name} className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-md flex justify-between items-center hover:shadow-2xl transition-all duration-500 group">
-              <div className="flex-1 pr-8">
-                {item.id && <span className="text-[12px] font-mono text-slate-400 block mb-2 tracking-widest font-bold group-hover:text-rose-400 transition-colors uppercase">{item.id}</span>}
-                <h4 className="text-[22px] font-black leading-tight text-slate-900 mb-3">{item.name}</h4>
-                <div className="flex items-center gap-4">
-                  <span className="text-[14px] font-black text-slate-400">$</span>
+            <div key={item.id || item.name} className="bg-white p-5 lg:p-10 rounded-2xl lg:rounded-[3rem] border border-slate-100 shadow-md flex justify-between items-center hover:shadow-2xl transition-all duration-500">
+              <div className="flex-1 pr-4 lg:pr-10">
+                {item.id && <span className="text-[10px] lg:text-[14px] font-mono text-slate-400 block mb-1 lg:mb-3 tracking-widest font-bold uppercase">{item.id}</span>}
+                <h4 className="text-[15px] lg:text-[28px] font-black leading-tight text-slate-900 mb-2 lg:mb-4">{item.name}</h4>
+                <div className="flex items-center gap-3 lg:gap-6">
+                  <span className="text-[11px] lg:text-[16px] font-black text-slate-400">$</span>
                   {activeTab === 'salon' ? (
-                    <div className="flex items-center gap-5">
-                      <span className="text-rose-500 font-mono text-lg line-through decoration-rose-600 decoration-4 italic opacity-40">
+                    <div className="flex items-center gap-4 lg:gap-8">
+                      <span className="text-rose-500 font-mono text-sm lg:text-2xl line-through decoration-rose-600 decoration-2 italic opacity-40">
                         {item.price.toFixed(2)}
                       </span>
-                      <span className="text-slate-900 font-mono text-2xl font-black tracking-tighter bg-yellow-100 px-3 rounded-xl shadow-inner">
+                      <span className="text-slate-900 font-mono text-lg lg:text-3xl font-black tracking-tighter bg-yellow-100 px-2 lg:px-4 rounded-xl shadow-inner">
                         {(item.price/2).toFixed(2)}
                       </span>
                     </div>
                   ) : (
-                    <span className="text-slate-900 font-mono text-2xl font-black tracking-tighter">
+                    <span className="text-slate-900 font-mono text-lg lg:text-3xl font-black tracking-tighter">
                       {item.price.toFixed(2)}
                     </span>
                   )}
@@ -526,55 +524,55 @@ const App = () => {
         </div>
 
         {/* 右邊：電腦版側欄購物車 */}
-        <div className="hidden lg:block w-[500px] shrink-0">
-          <div className="sticky top-52 bg-slate-900 text-white rounded-[3.5rem] p-12 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.5)] border border-white/10 overflow-hidden flex flex-col max-h-[calc(100vh-220px)]">
-            <div className="flex items-center gap-5 mb-10 border-b border-white/10 pb-8">
-                <div className="bg-rose-500 p-4 rounded-2xl shadow-2xl shadow-rose-500/40">
-                    <ShoppingCart size={30} className="text-white" />
+        <div className="hidden lg:block w-[550px] shrink-0">
+          <div className="sticky top-60 bg-slate-900 text-white rounded-[4rem] p-12 lg:p-16 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.5)] border border-white/10 overflow-hidden flex flex-col max-h-[calc(100vh-280px)]">
+            <div className="flex items-center gap-6 mb-12 border-b border-white/10 pb-10">
+                <div className="bg-rose-500 p-5 rounded-2xl shadow-2xl shadow-rose-500/40">
+                    <ShoppingCart size={36} className="text-white" />
                 </div>
-                <h3 className="text-3xl font-black tracking-tight">落單清單</h3>
+                <h3 className="text-4xl font-black tracking-tight">落單清單</h3>
             </div>
             <div className="flex-1 overflow-y-auto custom-scrollbar pr-4"><CartContent isSidebar={true} /></div>
-            <div className="pt-10 border-t border-white/10 mt-10 space-y-8">
+            <div className="pt-12 border-t border-white/10 mt-12 space-y-10">
                 <div className="flex justify-between items-end">
-                    <span className="text-[14px] text-slate-500 font-black uppercase tracking-[0.4em]">應付總額</span>
-                    <span className="text-5xl font-mono font-black text-white leading-none tracking-tighter shadow-sm">
-                        <span className="text-xl font-sans mr-2 text-slate-500">HK$</span>
+                    <span className="text-[16px] text-slate-500 font-black uppercase tracking-[0.4em]">應付總額</span>
+                    <span className="text-6xl font-mono font-black text-white leading-none tracking-tighter">
+                        <span className="text-2xl font-sans mr-3 text-slate-500">HK$</span>
                         {promos.grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                     </span>
                 </div>
-                <button onClick={handleFinalOrder} className="w-full bg-emerald-500 hover:bg-emerald-400 text-white shadow-2xl shadow-emerald-500/40 active:scale-95 py-7 rounded-[2rem] font-black text-2xl flex items-center justify-center gap-5 transition-all duration-300">
-                    <MessageCircle size={30} /> WhatsApp 落單
+                <button onClick={handleFinalOrder} className="w-full bg-emerald-500 hover:bg-emerald-400 text-white shadow-2xl shadow-emerald-500/40 active:scale-95 py-10 rounded-[2.5rem] font-black text-3xl flex items-center justify-center gap-6 transition-all duration-300">
+                    <MessageCircle size={36} /> WhatsApp 落單
                 </button>
             </div>
           </div>
         </div>
       </main>
 
-      {/* 手機版抽屜 */}
+      {/* 手機版底部抽屜 */}
       <div className={`lg:hidden fixed bottom-0 left-0 right-0 z-[60] transition-all duration-500 ease-out transform ${hasItems ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'}`}>
-        <div className="max-w-2xl mx-auto px-4 pb-12">
-          <div className="bg-slate-900 text-white rounded-[3.5rem] shadow-2xl border border-white/10 overflow-hidden">
+        <div className="max-w-2xl mx-auto px-4 pb-10">
+          <div className="bg-slate-900 text-white rounded-[2.5rem] shadow-2xl border border-white/10 overflow-hidden">
             <div className="relative">
-                <button onClick={() => setIsExpanded(!isExpanded)} className="w-full py-8 flex flex-col items-center gap-3 active:bg-white/5 transition-colors">
-                    <div className="w-20 h-2 bg-white/20 rounded-full mb-1" />
-                    <div className="text-[14px] tracking-[0.3em] font-black text-slate-400 uppercase flex items-center gap-4">
+                <button onClick={() => setIsExpanded(!isExpanded)} className="w-full py-6 flex flex-col items-center gap-2 active:bg-white/5 transition-colors">
+                    <div className="w-16 h-1.5 bg-white/20 rounded-full mb-1" />
+                    <div className="text-[11px] tracking-[0.3em] font-black text-slate-400 uppercase flex items-center gap-3">
                         {isExpanded ? '收起清單' : '落單及填寫資料'} 
-                        {isExpanded ? <ChevronDown size={22} className="animate-bounce" /> : <ChevronUp size={22} className="animate-bounce" />}
+                        {isExpanded ? <ChevronDown size={18} /> : <ChevronUp size={18} />}
                     </div>
                 </button>
-                {isExpanded && <button onClick={() => setIsExpanded(false)} className="absolute right-10 top-8 p-4 bg-white/10 rounded-full text-white/50 active:scale-90"><X size={26} /></button>}
+                {isExpanded && <button onClick={() => setIsExpanded(false)} className="absolute right-8 top-6 p-2 bg-white/10 rounded-full text-white/50 active:scale-90"><X size={20} /></button>}
             </div>
-            <div className={`transition-all duration-500 ease-in-out overflow-y-auto custom-scrollbar ${isExpanded ? 'max-h-[85vh]' : 'max-h-0'}`}><CartContent isSidebar={false} /></div>
-            <div className="px-12 py-12 bg-black/40 backdrop-blur-md flex items-center justify-between border-t border-white/10 shadow-2xl">
+            <div className={`transition-all duration-500 ease-in-out overflow-y-auto custom-scrollbar ${isExpanded ? 'max-h-[75vh]' : 'max-h-0'}`}><CartContent isSidebar={false} /></div>
+            <div className="px-8 py-8 bg-black/40 backdrop-blur-md flex items-center justify-between border-t border-white/10 shadow-2xl">
               <div className="flex flex-col">
-                <span className="text-[12px] text-slate-500 font-black uppercase tracking-[0.3em] mb-2">應付總額</span>
-                <span className="text-4xl font-mono font-black text-white tracking-tighter leading-none">
+                <span className="text-[10px] text-slate-500 font-black uppercase tracking-[0.3em] mb-1">應付總額</span>
+                <span className="text-2xl font-mono font-black text-white tracking-tighter leading-none">
                   {promos.grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                 </span>
               </div>
-              <button onClick={handleFinalOrder} className="bg-emerald-500 text-white shadow-2xl shadow-emerald-500/40 px-12 py-7 rounded-[1.5rem] font-black text-xl flex items-center gap-4 active:scale-95 transition-all duration-300">
-                <MessageCircle size={26} /> 落單
+              <button onClick={handleFinalOrder} className="bg-emerald-500 text-white shadow-2xl shadow-emerald-500/40 px-8 py-5 rounded-2xl font-black text-base flex items-center gap-3 active:scale-95">
+                落單
               </button>
             </div>
           </div>
@@ -583,13 +581,12 @@ const App = () => {
 
       <style>{`
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        .mobile-input { font-size: 20px !important; }
+        .mobile-input { font-size: 16px !important; }
+        @media (min-width: 1024px) { .mobile-input { font-size: 22px !important; } }
         input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         * { -webkit-tap-highlight-color: transparent; }
         .custom-scrollbar::-webkit-scrollbar { width: 8px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
-        input[type=range]::-webkit-slider-runnable-track { height: 10px; background: #f1f5f9; border-radius: 10px; }
-        input[type=range]::-webkit-slider-thumb { height: 28px; width: 28px; background: #f43f5e; margin-top: -9px; -webkit-appearance: none; border-radius: 50%; box-shadow: 0 5px 15px rgba(244,63,94,0.4); }
       `}</style>
     </div>
   );
