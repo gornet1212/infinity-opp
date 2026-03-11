@@ -16,7 +16,7 @@ import {
   Minimize2
 } from 'lucide-react';
 
-// --- 完整資料庫 ---
+// --- 完整資料庫整合 ---
 const DATA = {
   mask: {
     label: "面膜紙",
@@ -34,10 +34,10 @@ const DATA = {
         { id: "PM-009", name: "MERCURY水凝面膜紙", price: 24, type: "normal" },
       ],
       "精華面膜紙": [
-        { id: "EM-01", name: "左旋維他命C/ 牛奶 美白面膜紙", price: 28, type: "serum" },
-        { id: "EM-02", name: "魚骨膠原 / 咖啡因 抗皺面膜紙", price: 28, type: "serum" },
-        { id: "EM-03", name: "透明質酸 / 維他命B5 面膜紙", price: 28, type: "serum" },
-        { id: "EM-04", name: "輔酵素Q10 / 維他命E 抗氧面膜紙", price: 28, type: "serum" },
+        { id: "EM-S1", name: "左旋維他命C/ 牛奶 美白面膜紙", price: 28, type: "serum" },
+        { id: "EM-S2", name: "魚骨膠原 / 咖啡因 抗皺面膜紙", price: 28, type: "serum" },
+        { id: "EM-S3", name: "透明質酸 / 維他命B5 面膜紙", price: 28, type: "serum" },
+        { id: "EM-S4", name: "輔酵素Q10 / 維他命E 抗氧面膜紙", price: 28, type: "serum" },
       ]
     }
   },
@@ -131,7 +131,9 @@ const DATA = {
         { id: "IG-009", name: "MERCURY水凝離子啫喱", price: 230 },
       ],
       "底霜": [
-        { id: "BC-001", name: "細緻毛孔控油底霜", price: 230 },
+        { id: "BC-001", name: "熊果素/維他命C底霜", price: 230 },
+        { id: "BC-002", name: "膠原蛋白底霜", price: 230 },
+        { id: "BC-003", name: "細緻毛孔控油底霜", price: 230 },
         { id: "BC-004", name: "玫瑰保濕底霜", price: 230 },
       ],
       "面膜": [
@@ -314,7 +316,7 @@ const App = () => {
   });
 
   const QuantitySelector = ({ id, qty, isMini = false }) => (
-    <div className={`flex items-center rounded-xl border ${isMini ? 'bg-white/10 border-white/20 p-1' : 'bg-gray-100 border-gray-200 p-1.5'}`}>
+    <div className={`flex items-center rounded-xl border ${isMini ? 'bg-white/10 border-white/20 p-1' : 'bg-gray-100 border-gray-200 p-1.5 lg:p-2'}`}>
       <button onClick={() => updateQty(id, (qty || 0) - 1)} className={`${isMini ? 'w-8 h-8 lg:w-10 lg:h-10 text-white/70' : 'w-10 h-10 lg:w-14 lg:h-14 text-gray-500'} flex items-center justify-center active:bg-black/10 rounded-lg`}><Minus size={isMini ? 16 : 22}/></button>
       <IsolatedInput id={id} initialQty={qty || 0} onUpdate={updateQty} isMini={isMini} />
       <button onClick={() => updateQty(id, (qty || 0) + 1)} className={`${isMini ? 'w-8 h-8 lg:w-10 lg:h-10 text-white/70' : 'w-10 h-10 lg:w-14 lg:h-14 text-gray-500'} flex items-center justify-center active:bg-black/10 rounded-lg`}><Plus size={isMini ? 16 : 22}/></button>
@@ -333,7 +335,7 @@ const App = () => {
 
   const CartContent = ({ isSidebar = false }) => (
     <div className={`space-y-6 lg:space-y-8 ${isSidebar ? 'p-0' : 'px-6 lg:px-10 pb-12'}`}>
-      <div id="customer-form" className="space-y-4 bg-white/5 p-5 lg:p-8 rounded-[1.5rem] lg:rounded-[2.5rem] border border-white/10 shadow-inner">
+      <div className="space-y-4 bg-white/5 p-5 lg:p-8 rounded-[1.5rem] lg:rounded-[2.5rem] border border-white/10 shadow-inner">
         <div className="text-[12px] lg:text-[14px] font-black text-emerald-400 uppercase tracking-[0.2em] flex items-center gap-2 mb-2 lg:mb-4"><Tag size={16} /> 聯絡資料 (可選)</div>
         <div className="space-y-3 lg:space-y-5">
           <input type="text" placeholder="公司名稱" className="w-full bg-black/40 border border-white/10 rounded-xl lg:rounded-2xl py-3 lg:py-5 px-4 text-sm lg:text-lg text-white outline-none focus:border-emerald-500" value={customerInfo.company} onChange={(e) => setCustomerInfo({...customerInfo, company: e.target.value})} />
@@ -378,7 +380,7 @@ const App = () => {
       
       {/* 比例尺調整 (只喺電腦版顯示) */}
       <div className="fixed top-6 right-10 z-[100] hidden lg:block">
-        <div className="bg-white/90 backdrop-blur shadow-2xl border border-slate-200 rounded-full px-6 py-3 flex items-center gap-4">
+        <div className="bg-white/90 backdrop-blur shadow-2xl border border-slate-200 rounded-full px-6 py-3 flex items-center gap-4 hover:scale-105 transition-all">
            <Minimize2 size={16} className="text-slate-400" />
            <input type="range" min="0.8" max="1.5" step="0.05" value={zoomScale} onChange={(e) => setZoomScale(parseFloat(e.target.value))} className="w-40 accent-rose-500 cursor-pointer" />
            <Maximize2 size={16} className="text-slate-400" />
@@ -396,7 +398,7 @@ const App = () => {
             {Object.entries(DATA).map(([k, v]) => (
               <button key={k} onClick={() => setActiveTab(k)} className={`pb-2 lg:pb-5 text-[12px] lg:text-[22px] tracking-[0.2em] relative whitespace-nowrap transition-all uppercase ${activeTab === k ? 'text-black font-extrabold' : 'text-slate-400 font-bold hover:text-slate-600'}`}>
                 {v.label}
-                {activeTab === k && <div className="absolute bottom-0 left-0 w-full h-1 lg:h-2 bg-rose-500 rounded-t-full" />}
+                {activeTab === k && <div className="absolute bottom-0 left-0 w-full h-1 lg:h-2 bg-rose-500 rounded-t-full shadow-[0_-4px_10px_rgba(244,63,94,0.3)]" />}
               </button>
             ))}
           </nav>
@@ -423,7 +425,7 @@ const App = () => {
                   {activeTab === 'salon' ? (
                     <div className="flex items-center gap-4 lg:gap-8">
                       <span className="text-rose-500 font-mono text-sm lg:text-2xl line-through decoration-rose-600 decoration-2 italic opacity-40">{item.price.toFixed(2)}</span>
-                      <span className="text-slate-900 font-mono text-lg lg:text-3xl font-black tracking-tighter bg-yellow-100 px-2 lg:px-4 rounded-xl">{(item.price/2).toFixed(2)}</span>
+                      <span className="text-slate-900 font-mono text-lg lg:text-3xl font-black tracking-tighter bg-yellow-100 px-2 lg:px-4 rounded-xl shadow-inner">{(item.price/2).toFixed(2)}</span>
                     </div>
                   ) : (
                     <span className="text-slate-900 font-mono text-lg lg:text-3xl font-black tracking-tighter">{item.price.toFixed(2)}</span>
@@ -454,32 +456,33 @@ const App = () => {
         </div>
       </main>
 
-      {/* 手機版：全新獨立全屏遮罩層 (最高層級) */}
-      <div className={`lg:hidden fixed inset-0 z-[9999] transition-all duration-500 pointer-events-none ${isExpanded ? 'opacity-100' : 'opacity-0'}`}>
-         <div className={`absolute inset-0 bg-slate-950 transition-opacity duration-500 ${isExpanded ? 'opacity-95' : 'opacity-0'}`} />
-         <div className={`absolute inset-0 flex flex-col pointer-events-auto transform transition-transform duration-500 ${isExpanded ? 'translate-y-0' : 'translate-y-full'}`}>
-            <div className="px-6 py-6 border-b border-white/10 flex justify-between items-center bg-slate-900 shadow-xl">
-              <h3 className="text-white text-xl font-black flex items-center gap-2"><ShoppingCart className="text-rose-500" /> 落單詳情</h3>
-              {/* 強制置頂關閉掣 */}
-              <button onClick={() => setIsExpanded(false)} className="bg-white/10 p-3 rounded-full text-white active:bg-rose-500 shadow-lg"><X size={28} /></button>
-            </div>
-            <div className="flex-1 overflow-y-auto bg-slate-950 py-6"><CartContent isSidebar={false} /></div>
-            <div className="p-6 bg-slate-900 border-t border-white/10 shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
-              <div className="flex justify-between items-center mb-4">
-                <div className="flex flex-col">
-                  <span className="text-[10px] text-slate-500 font-black uppercase tracking-widest">應付總額</span>
-                  <span className="text-3xl font-mono font-black text-white">HK$ {promos.grandTotal.toFixed(2)}</span>
-                </div>
-                <button onClick={handleFinalOrder} className="bg-emerald-500 text-white px-10 py-5 rounded-2xl font-black text-lg shadow-xl active:scale-95 active:bg-emerald-400">WhatsApp 送出</button>
+      {/* 手機版彈出層：最高層級 Z-9999 */}
+      <div 
+        className={`lg:hidden fixed inset-0 z-[9999] bg-slate-950 transition-transform duration-500 ${isExpanded ? 'translate-y-0' : 'translate-y-full'}`}
+        style={{ pointerEvents: isExpanded ? 'auto' : 'none' }}
+      >
+        <div className="h-full flex flex-col">
+          <div className="px-6 py-6 border-b border-white/10 flex justify-between items-center bg-slate-900 shadow-xl">
+            <h3 className="text-white text-xl font-black flex items-center gap-2"><ShoppingCart className="text-rose-500" /> 落單詳情</h3>
+            <button onClick={() => setIsExpanded(false)} className="bg-white/10 p-3 rounded-full text-white active:bg-rose-500 shadow-lg"><X size={28} /></button>
+          </div>
+          <div className="flex-1 overflow-y-auto bg-slate-950 py-6"><CartContent isSidebar={false} /></div>
+          <div className="p-6 bg-slate-900 border-t border-white/10 shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
+            <div className="flex justify-between items-center mb-4">
+              <div className="flex flex-col">
+                <span className="text-[10px] text-slate-500 font-black uppercase tracking-widest">應付總額</span>
+                <span className="text-3xl font-mono font-black text-white">HK$ {promos.grandTotal.toFixed(2)}</span>
               </div>
+              <button onClick={handleFinalOrder} className="bg-emerald-500 text-white px-10 py-5 rounded-2xl font-black text-lg shadow-xl active:scale-95">WhatsApp 送出</button>
             </div>
-         </div>
+          </div>
+        </div>
       </div>
 
-      {/* 底部迷你 Bar (獨立按鈕層) */}
-      <div className={`lg:hidden fixed bottom-6 inset-x-4 z-[900] transition-all duration-500 ${hasItems && !isExpanded ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0 pointer-events-none'}`}>
+      {/* 底部迷你 Bar：Z-900 */}
+      <div className={`lg:hidden fixed bottom-6 inset-x-4 z-[900] transition-all duration-500 ${hasItems && !isExpanded ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-20 opacity-0 scale-90 pointer-events-none'}`}>
         <button 
-          onClick={() => setIsExpanded(true)} 
+          onClick={(e) => { e.stopPropagation(); setIsExpanded(true); }} 
           className="w-full bg-slate-900 text-white rounded-full py-5 px-6 shadow-[0_20px_60px_rgba(0,0,0,0.8)] border border-white/10 flex items-center justify-between active:scale-95 active:bg-slate-800 transition-all"
         >
           <div className="flex items-center gap-3">
@@ -505,7 +508,7 @@ const App = () => {
         .custom-scrollbar::-webkit-scrollbar { width: 8px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
         input[type=range]::-webkit-slider-runnable-track { height: 10px; background: #f1f5f9; border-radius: 10px; }
-        input[type=range]::-webkit-slider-thumb { height: 28px; width: 28px; background: #f43f5e; margin-top: -9px; -webkit-appearance: none; border-radius: 50%; box-shadow: 0 5px 15px rgba(244,63,94,0.4); }
+        input[type=range]::-webkit-slider-thumb { height: 28px; width: 28px; background: #f43f5e; margin-top: -9px; -webkit-appearance: none; border-radius: 50%; shadow: 0 5px 15px rgba(244,63,94,0.4); }
       `}</style>
     </div>
   );
