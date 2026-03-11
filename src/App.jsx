@@ -217,6 +217,7 @@ const App = () => {
     setActiveSubTab(DATA[activeTab].subCategories[0]);
   }, [activeTab]);
 
+  // 面膜階梯價
   const MASK_TIERS = {
     normal: [{ qty: 1000, price: 5 }, { qty: 500, price: 5.5 }, { qty: 100, price: 6 }, { qty: 20, price: 8 }],
     serum: [{ qty: 1000, price: 8 }, { qty: 500, price: 9.5 }, { qty: 100, price: 12 }, { qty: 20, price: 14 }]
@@ -271,6 +272,7 @@ const App = () => {
     let salonLabel = "", salonDeduct = 0, salonPercent = 0;
     const totalVal = stats.salonHalfTotal;
 
+    // --- 美容院裝優化邏輯 (鎖死 $800 / $1600) ---
     if (totalVal >= 2300) { salonLabel = "已享有 $1600 送 $700 優惠"; salonDeduct = 700; salonPercent = 100; }
     else if (totalVal >= 1600) { salonLabel = `已扣減 $700，仲可以揀多 $${(2300 - totalVal).toFixed(2)} 免費貨`; salonDeduct = totalVal - 1600; salonPercent = 100; }
     else if (totalVal >= 1000) { salonLabel = `已享 $200 優惠，仲差 $${(1600 - totalVal).toFixed(2)} 享 $700 優惠`; salonDeduct = 200; salonPercent = (totalVal / 1600) * 100; }
@@ -334,24 +336,14 @@ const App = () => {
 
   const CartContent = ({ isSidebar = false }) => (
     <div className={`space-y-6 lg:space-y-8 ${isSidebar ? 'p-0' : 'px-6 lg:px-10 pb-12'}`}>
-      <div id="customer-form" className="space-y-4 bg-white/5 p-5 lg:p-8 rounded-[1.5rem] lg:rounded-[2.5rem] border border-white/10 shadow-inner">
+      <div className="space-y-4 bg-white/5 p-5 lg:p-8 rounded-[1.5rem] lg:rounded-[2.5rem] border border-white/10 shadow-inner">
         <div className="text-[12px] lg:text-[14px] font-black text-emerald-400 uppercase tracking-[0.2em] flex items-center gap-2 mb-2 lg:mb-4"><Tag size={16} /> 聯絡資料 (可選)</div>
         <div className="space-y-3 lg:space-y-5">
-          <div className="relative group">
-              <Building2 size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
-              <input type="text" placeholder="公司名稱" className="w-full bg-black/40 border border-white/10 rounded-xl lg:rounded-2xl py-3 lg:py-5 pl-12 lg:pl-14 pr-4 text-sm lg:text-lg focus:border-emerald-500 outline-none text-white" value={customerInfo.company} onChange={(e) => setCustomerInfo({...customerInfo, company: e.target.value})} />
-          </div>
-          <div className="relative group">
-              <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
-              <input type="text" placeholder="聯絡人姓名" className="w-full bg-black/40 border border-white/10 rounded-xl lg:rounded-2xl py-3 lg:py-5 pl-12 lg:pl-14 pr-4 text-sm lg:text-lg focus:border-emerald-500 outline-none text-white" value={customerInfo.contact} onChange={(e) => setCustomerInfo({...customerInfo, contact: e.target.value})} />
-          </div>
-          <div className="relative group">
-              <Phone size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
-              <input type="tel" placeholder="電話號碼" className="w-full bg-black/40 border border-white/10 rounded-xl lg:rounded-2xl py-3 lg:py-5 pl-12 lg:pl-14 pr-4 text-sm lg:text-lg focus:border-emerald-500 outline-none text-white" value={customerInfo.phone} onChange={(e) => setCustomerInfo({...customerInfo, phone: e.target.value})} />
-          </div>
+          <input type="text" placeholder="公司名稱" className="w-full bg-black/40 border border-white/10 rounded-xl lg:rounded-2xl py-3 lg:py-5 px-4 text-sm lg:text-lg text-white outline-none focus:border-emerald-500" value={customerInfo.company} onChange={(e) => setCustomerInfo({...customerInfo, company: e.target.value})} />
+          <input type="text" placeholder="聯絡人姓名" className="w-full bg-black/40 border border-white/10 rounded-xl lg:rounded-2xl py-3 lg:py-5 px-4 text-sm lg:text-lg text-white outline-none focus:border-emerald-500" value={customerInfo.contact} onChange={(e) => setCustomerInfo({...customerInfo, contact: e.target.value})} />
+          <input type="tel" placeholder="電話號碼" className="w-full bg-black/40 border border-white/10 rounded-xl lg:rounded-2xl py-3 lg:py-5 px-4 text-sm lg:text-lg text-white outline-none focus:border-emerald-500" value={customerInfo.phone} onChange={(e) => setCustomerInfo({...customerInfo, phone: e.target.value})} />
         </div>
       </div>
-
       <div className="space-y-4 lg:space-y-6">
         <div className="text-[12px] lg:text-[16px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2"><Maximize2 size={18} className="text-blue-400" /> 優惠進度</div>
         {promos.progress.map(p => (
@@ -364,7 +356,6 @@ const App = () => {
           </div>
         ))}
       </div>
-
       <div className="space-y-4 lg:space-y-6">
         <div className="text-[12px] lg:text-[16px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-white/10 pb-2 flex items-center gap-2"><ShoppingCart size={20} /> 已選產品 ({cartSummary.itemsList.length})</div>
         <div className="space-y-3 lg:space-y-5">
@@ -386,7 +377,7 @@ const App = () => {
   );
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] text-slate-900 antialiased font-sans transition-all duration-300 overflow-x-hidden">
+    <div className="min-h-screen bg-[#F8F9FA] text-slate-900 antialiased font-sans transition-all duration-300">
       
       {/* 比例尺調整 (只喺電腦版顯示) */}
       <div className="fixed top-6 right-10 z-[100] hidden lg:block">
@@ -415,12 +406,10 @@ const App = () => {
         </div>
       </header>
 
-      <div className="bg-white/50 backdrop-blur-sm border-b border-slate-200 sticky top-[95px] lg:top-[160px] z-40 overflow-hidden">
+      <div className="bg-white/50 backdrop-blur-sm border-b border-slate-200 sticky top-[95px] lg:top-[160px] z-40">
         <div className="max-w-7xl mx-auto px-4 lg:px-10 py-3 lg:py-6 flex gap-3 lg:gap-5 overflow-x-auto no-scrollbar">
           {DATA[activeTab].subCategories.map(c => (
-            <button key={c} onClick={() => setActiveSubTab(c)} className={`px-4 py-2 lg:px-10 lg:py-4 rounded-full text-[11px] lg:text-[18px] font-black whitespace-nowrap border shadow-sm transition-all duration-300 ${activeSubTab === c ? 'bg-slate-900 text-white border-slate-900 scale-105 shadow-xl' : 'bg-white text-slate-500 border-slate-200 hover:border-slate-400'}`}>
-              {c}
-            </button>
+            <button key={c} onClick={() => setActiveSubTab(c)} className={`px-4 py-2 lg:px-10 lg:py-4 rounded-full text-[11px] lg:text-[18px] font-black whitespace-nowrap border shadow-sm transition-all duration-300 ${activeSubTab === c ? 'bg-slate-900 text-white border-slate-900 scale-105 shadow-xl' : 'bg-white text-slate-500 border-slate-200 hover:border-slate-400'}`}>{c}</button>
           ))}
         </div>
       </div>
@@ -468,20 +457,19 @@ const App = () => {
         </div>
       </main>
 
-      {/* 手機版：專用底部「迷你 Bar」及彈出層 */}
-      <div className={`lg:hidden fixed bottom-0 left-0 right-0 z-[60] transition-transform duration-500 ${hasItems ? 'translate-y-0' : 'translate-y-full'}`}>
+      {/* 手機版：專用底部「迷你 Bar」及彈出層 (層級優化) */}
+      <div className={`lg:hidden fixed inset-x-0 bottom-0 z-[1000] ${hasItems ? 'translate-y-0' : 'translate-y-full'} transition-transform duration-500`}>
         
-        {/* 全屏彈出層 (Expanded) */}
-        <div className={`fixed inset-0 bg-slate-950/90 backdrop-blur-xl transition-all duration-300 ${isExpanded ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
-          <div className="h-full flex flex-col pt-6">
-            <div className="px-6 flex justify-between items-center mb-4">
-              <h3 className="text-white text-xl font-black flex items-center gap-2"><ShoppingCart className="text-rose-500" /> 落單清單</h3>
-              {/* 超大關閉掣 */}
-              <button onClick={() => setIsExpanded(false)} className="bg-white/10 p-3 rounded-full text-white active:bg-rose-500 transition-colors"><X size={28} /></button>
+        {/* 全屏彈出層 */}
+        <div className={`fixed inset-0 bg-slate-950 transition-opacity duration-300 ${isExpanded ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+          <div className="h-full flex flex-col">
+            <div className="px-6 py-6 border-b border-white/10 flex justify-between items-center bg-slate-900">
+              <h3 className="text-white text-xl font-black flex items-center gap-2"><ShoppingCart className="text-rose-500" /> 落單詳情</h3>
+              <button onClick={() => setIsExpanded(false)} className="bg-white/10 p-3 rounded-full text-white active:bg-rose-500"><X size={28} /></button>
             </div>
-            <div className="flex-1 overflow-y-auto"><CartContent isSidebar={false} /></div>
-            <div className="p-8 bg-slate-900 border-t border-white/10">
-              <div className="flex justify-between items-center mb-6">
+            <div className="flex-1 overflow-y-auto bg-slate-950 py-6"><CartContent isSidebar={false} /></div>
+            <div className="p-6 bg-slate-900 border-t border-white/10">
+              <div className="flex justify-between items-center mb-4">
                 <div className="flex flex-col">
                   <span className="text-[10px] text-slate-500 font-black uppercase tracking-widest">應付總額</span>
                   <span className="text-3xl font-mono font-black text-white">HK$ {promos.grandTotal.toFixed(2)}</span>
@@ -492,22 +480,27 @@ const App = () => {
           </div>
         </div>
 
-        {/* 迷你黑金 Bar (Collapsed) */}
-        <div className={`mx-4 mb-6 transition-all duration-300 ${isExpanded ? 'translate-y-20 opacity-0' : 'translate-y-0 opacity-100'}`}>
-          <button onClick={() => setIsExpanded(true)} className="w-full bg-slate-900 text-white rounded-full py-4 px-6 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10 flex items-center justify-between active:scale-95 transition-transform">
-            <div className="flex items-center gap-3">
-              <div className="bg-rose-500 p-2 rounded-full relative">
-                <ShoppingCart size={18} />
-                <span className="absolute -top-1 -right-1 bg-white text-rose-500 text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full border border-rose-500">{cartSummary.itemsList.length}</span>
+        {/* 底部迷你 Bar - 確保喺所有內容最上面 */}
+        {!isExpanded && (
+          <div className="px-4 pb-6 pt-2 bg-transparent">
+            <button 
+              onClick={(e) => { e.preventDefault(); setIsExpanded(true); }} 
+              className="w-full bg-slate-900 text-white rounded-full py-5 px-6 shadow-[0_15px_40px_rgba(0,0,0,0.6)] border border-white/10 flex items-center justify-between active:scale-95 transition-transform"
+            >
+              <div className="flex items-center gap-3">
+                <div className="bg-rose-500 p-2 rounded-full relative">
+                  <ShoppingCart size={20} />
+                  <span className="absolute -top-1 -right-1 bg-white text-rose-500 text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-full border border-rose-500">{cartSummary.itemsList.length}</span>
+                </div>
+                <span className="text-sm font-black tracking-widest uppercase text-slate-300">查看訂單</span>
               </div>
-              <span className="text-xs font-black tracking-widest uppercase text-slate-400">查看清單 / 落單</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-lg font-mono font-black text-white">HK$ {promos.grandTotal.toFixed(2)}</span>
-              <ChevronUp size={20} className="text-rose-500 animate-bounce" />
-            </div>
-          </button>
-        </div>
+              <div className="flex items-center gap-3">
+                <span className="text-xl font-mono font-black text-white">HK$ {promos.grandTotal.toFixed(2)}</span>
+                <ChevronUp size={24} className="text-rose-500 animate-bounce" />
+              </div>
+            </button>
+          </div>
+        )}
       </div>
 
       <style>{`
@@ -518,6 +511,8 @@ const App = () => {
         * { -webkit-tap-highlight-color: transparent; }
         .custom-scrollbar::-webkit-scrollbar { width: 8px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+        input[type=range]::-webkit-slider-runnable-track { height: 10px; background: #f1f5f9; border-radius: 10px; }
+        input[type=range]::-webkit-slider-thumb { height: 28px; width: 28px; background: #f43f5e; margin-top: -9px; -webkit-appearance: none; border-radius: 50%; box-shadow: 0 5px 15px rgba(244,63,94,0.4); }
       `}</style>
     </div>
   );
