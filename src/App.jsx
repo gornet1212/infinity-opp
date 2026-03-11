@@ -16,28 +16,28 @@ import {
   Minimize2
 } from 'lucide-react';
 
-// --- 完整資料庫 (對照你的最新清單) ---
+// --- 完整資料庫整合 ---
 const DATA = {
   mask: {
     label: "面膜紙",
     subCategories: ["面膜紙", "精華面膜紙"],
     items: {
       "面膜紙": [
-        { id: "PM-001", name: "牛奶美顏面膜紙", price: 24.00, type: "normal" },
-        { id: "PM-002", name: "玫瑰保濕面膜紙", price: 24.00, type: "normal" },
-        { id: "PM-003", name: "甘菊藍防敏面膜紙", price: 24.00, type: "normal" },
-        { id: "PM-004", name: "青瓜舒緩面膜紙", price: 24.00, type: "normal" },
-        { id: "PM-005", name: "膠原蛋白面膜紙", price: 24.00, type: "normal" },
-        { id: "PM-006", name: "檸檬草消炎面膜紙", price: 24.00, type: "normal" },
-        { id: "PM-007", name: "純植物收毛孔面膜紙", price: 24.00, type: "normal" },
-        { id: "PM-008", name: "熊果素激白面膜紙", price: 24.00, type: "normal" },
-        { id: "PM-009", name: "MERCURY水凝面膜紙", price: 24.00, type: "normal" },
+        { id: "PM-001", name: "牛奶美顏面膜紙", price: 24, type: "normal" },
+        { id: "PM-002", name: "玫瑰保濕面膜紙", price: 24, type: "normal" },
+        { id: "PM-003", name: "甘菊藍防敏面膜紙", price: 24, type: "normal" },
+        { id: "PM-004", name: "青瓜舒緩面膜紙", price: 24, type: "normal" },
+        { id: "PM-005", name: "膠原蛋白面膜紙", price: 24, type: "normal" },
+        { id: "PM-006", name: "檸檬草消炎面膜紙", price: 24, type: "normal" },
+        { id: "PM-007", name: "純植物收毛孔面膜紙", price: 24, type: "normal" },
+        { id: "PM-008", name: "熊果素激白面膜紙", price: 24, type: "normal" },
+        { id: "PM-009", name: "MERCURY水凝面膜紙", price: 24, type: "normal" },
       ],
       "精華面膜紙": [
-        { id: "EM-01", name: "左旋維他命C/ 牛奶 美白面膜紙", price: 28.00, type: "serum" },
-        { id: "EM-02", name: "魚骨膠原 / 咖啡因 抗皺面膜紙", price: 28.00, type: "serum" },
-        { id: "EM-03", name: "透明質酸 / 維他命B5 面膜紙", price: 28.00, type: "serum" },
-        { id: "EM-04", name: "輔酵素Q10 / 維他命E 抗氧面膜紙", price: 28.00, type: "serum" },
+        { id: "EM-01", name: "左旋維他命C/ 牛奶 美白面膜紙", price: 28, type: "serum" },
+        { id: "EM-02", name: "魚骨膠原 / 咖啡因 抗皺面膜紙", price: 28, type: "serum" },
+        { id: "EM-03", name: "透明質酸 / 維他命B5 面膜紙", price: 28, type: "serum" },
+        { id: "EM-04", name: "輔酵素Q10 / 維他命E 抗氧面膜紙", price: 28, type: "serum" },
       ]
     }
   },
@@ -46,25 +46,25 @@ const DATA = {
     subCategories: ["葡聚糖系列", "海洋注氧系列"],
     items: {
       "葡聚糖系列": [
-        { id: "CMG-001", name: "葡聚糖修護潔膚凝膠", price: 172.00 },
-        { id: "CMG-002", name: "葡聚糖修護潔面乳", price: 162.00 },
-        { id: "CMG-003", name: "葡聚糖健膚水", price: 172.00 },
-        { id: "CMG-004", name: "葡聚糖修護面膜", price: 172.00 },
-        { id: "CMG-005", name: "葡聚糖防護日霜", price: 162.00 },
-        { id: "CMG-006", name: "葡聚糖修護晚霜", price: 172.00 },
-        { id: "CMG-007", name: "葡聚糖再生肌膚精華素", price: 208.00 },
-        { id: "CMG-008", name: "葡聚糖修護眼霜", price: 208.00 },
+        { id: "CMG-001", name: "葡聚糖修護潔膚凝膠", price: 172 },
+        { id: "CMG-002", name: "葡聚糖修護潔面乳", price: 162 },
+        { id: "CMG-003", name: "葡聚糖健膚水", price: 172 },
+        { id: "CMG-004", name: "葡聚糖修護面膜", price: 172 },
+        { id: "CMG-005", name: "葡聚糖防護日霜", price: 162 },
+        { id: "CMG-006", name: "葡聚糖修護晚霜", price: 172 },
+        { id: "CMG-007", name: "葡聚糖再生肌膚精華素", price: 208 },
+        { id: "CMG-008", name: "葡聚糖修護眼霜", price: 208 },
       ],
       "海洋注氧系列": [
-        { id: "O2-001", name: "海洋注氧卸妝油", price: 200.00 },
-        { id: "O2-002", name: "海洋注氧卸妝液", price: 172.00 },
-        { id: "O2-003", name: "海洋注氧深層淨膚凝膠", price: 162.00 },
-        { id: "O2-004", name: "海洋注氧磨砂凝膠", price: 150.00 },
-        { id: "O2-005", name: "海洋注氧保濕液", price: 184.00 },
-        { id: "O2-006", name: "海洋注氧面膜", price: 208.00 },
-        { id: "O2-007", name: "海洋注氧喚膚霜", price: 230.00 },
-        { id: "O2-008", name: "海洋注氧眼部精華液", price: 172.00 },
-        { id: "O2-009", name: "海洋注氧精華液", price: 162.00 },
+        { id: "O2-001", name: "海洋注氧卸妝油", price: 200 },
+        { id: "O2-002", name: "海洋注氧卸妝液", price: 172 },
+        { id: "O2-003", name: "海洋注氧深層淨膚凝膠", price: 162 },
+        { id: "O2-004", name: "海洋注氧磨砂凝膠", price: 150 },
+        { id: "O2-005", name: "海洋注氧保濕液", price: 184 },
+        { id: "O2-006", name: "海洋注氧面膜", price: 208 },
+        { id: "O2-007", name: "海洋注氧喚膚霜", price: 230 },
+        { id: "O2-008", name: "海洋注氧眼部精華液", price: 172 },
+        { id: "O2-009", name: "海洋注氧精華液", price: 162 },
       ]
     }
   },
@@ -73,132 +73,132 @@ const DATA = {
     subCategories: ["潔面", "爽膚水", "磨砂去死皮", "按摩", "離子啫喱", "底霜", "面膜", "眼部及唇部", "暗瘡黑頭", "精華", "面霜", "身體護理", "減肥"],
     items: {
       "潔面": [
-        { id: "S-004", name: "MERCURY植物滋潤卸妝油", price: 260.00 },
-        { id: "RC-001", name: "維他命C美白卸妝潔面奶", price: 174.00 },
-        { id: "RC-002", name: "玫瑰保濕卸妝潔面奶", price: 174.00 },
-        { id: "RC-003", name: "甘菊藍防敏卸妝潔面奶", price: 174.00 },
-        { id: "RC-004", name: "青瓜舒緩卸妝潔面奶", price: 174.00 },
-        { id: "RC-005", name: "膠原蛋白卸妝潔面奶", price: 174.00 },
-        { id: "RC-006", name: "檸檬草消炎卸妝潔面奶", price: 174.00 },
-        { id: "RC-007", name: "純植物收毛孔卸妝潔面奶", price: 174.00 },
-        { id: "RC-009", name: "MERCURY水凝卸妝潔面奶", price: 184.00 },
-        { id: "CG-003", name: "MERCURY水凝潔面啫喱", price: 196.00 },
-        { id: "CG-004", name: "膠原蛋白潔面啫喱", price: 184.00 },
+        { id: "S-004", name: "MERCURY植物滋潤卸妝油", price: 260 },
+        { id: "RC-001", name: "維他命C美白卸妝潔面奶", price: 174 },
+        { id: "RC-002", name: "玫瑰保濕卸妝潔面奶", price: 174 },
+        { id: "RC-003", name: "甘菊藍防敏卸妝潔面奶", price: 174 },
+        { id: "RC-004", name: "青瓜舒緩卸妝潔面奶", price: 174 },
+        { id: "RC-005", name: "膠原蛋白卸妝潔面奶", price: 174 },
+        { id: "RC-006", name: "檸檬草消炎卸妝潔面奶", price: 174 },
+        { id: "RC-007", name: "純植物收毛孔卸妝潔面奶", price: 174 },
+        { id: "RC-009", name: "MERCURY水凝卸妝潔面奶", price: 184 },
+        { id: "CG-003", name: "MERCURY水凝潔面啫喱", price: 196 },
+        { id: "CG-004", name: "膠原蛋白潔面啫喱", price: 184 },
       ],
       "爽膚水": [
-        { id: "FR-001", name: "維他命C美白爽膚水", price: 174.00 },
-        { id: "FR-002", name: "玫瑰保濕爽膚水", price: 174.00 },
-        { id: "FR-003", name: "甘菊藍防敏爽膚水", price: 174.00 },
-        { id: "FR-004", name: "青瓜舒緩爽膚水", price: 174.00 },
-        { id: "FR-005", name: "膠原蛋白爽膚水", price: 174.00 },
-        { id: "FR-006", name: "檸檬草消炎爽膚水", price: 174.00 },
-        { id: "FR-007", name: "純植物收毛孔爽膚水", price: 174.00 },
-        { id: "FR-009", name: "MERCURY水凝爽膚水", price: 184.00 },
+        { id: "FR-001", name: "維他命C美白爽膚水", price: 174 },
+        { id: "FR-002", name: "玫瑰保濕爽膚水", price: 174 },
+        { id: "FR-003", name: "甘菊藍防敏爽膚水", price: 174 },
+        { id: "FR-004", name: "青瓜舒緩爽膚水", price: 174 },
+        { id: "FR-005", name: "膠原蛋白爽膚水", price: 174 },
+        { id: "FR-006", name: "檸檬草消炎爽膚水", price: 174 },
+        { id: "FR-007", name: "純植物收毛孔爽膚水", price: 174 },
+        { id: "FR-009", name: "MERCURY水凝爽膚水", price: 184 },
       ],
       "磨砂去死皮": [
-        { id: "SP-001", name: "維他命C美白磨砂膏", price: 184.00 },
-        { id: "SP-002", name: "玫瑰保濕磨砂膏", price: 184.00 },
-        { id: "SP-003", name: "膠原蛋白磨砂膏", price: 184.00 },
-        { id: "SP-004", name: "檸檬草消炎磨砂膏", price: 184.00 },
-        { id: "SP-005", name: "淨白亮肌去死皮液", price: 208.00 },
-        { id: "SP-006", name: "植物身體美白磨砂", price: 184.00 },
-        { id: "SPG-001", name: "膠原蛋白磨砂啫喱", price: 184.00 },
-        { id: "SPG-002", name: "青瓜保濕磨砂啫喱", price: 184.00 },
+        { id: "SP-001", name: "維他命C美白磨砂膏", price: 184 },
+        { id: "SP-002", name: "玫瑰保濕磨砂膏", price: 184 },
+        { id: "SP-003", name: "膠原蛋白磨砂膏", price: 184 },
+        { id: "SP-004", name: "檸檬草消炎磨砂膏", price: 184 },
+        { id: "SP-005", name: "淨白亮肌去死皮液", price: 208 },
+        { id: "SP-006", name: "植物身體美白磨砂", price: 184 },
+        { id: "SPG-001", name: "膠原蛋白磨砂啫喱", price: 184 },
+        { id: "SPG-002", name: "青瓜保濕磨砂啫喱", price: 184 },
       ],
       "按摩": [
-        { id: "MC-001", name: "維他命C美白按摩膏", price: 184.00 },
-        { id: "MC-002", name: "玫瑰保濕按摩膏", price: 184.00 },
-        { id: "MC-003", name: "甘菊藍防敏按摩膏", price: 184.00 },
-        { id: "MC-004", name: "青瓜舒緩按摩膏", price: 184.00 },
-        { id: "MC-005", name: "膠原蛋白按摩膏", price: 184.00 },
-        { id: "MC-006", name: "檸檬草消炎按摩膏", price: 184.00 },
-        { id: "MC-007", name: "純植物收毛孔按摩膏", price: 184.00 },
-        { id: "MC-009", name: "MERCURY水凝按摩膏", price: 208.00 },
-        { id: "MG-003", name: "膠原蛋白按摩啫喱", price: 184.00 },
-        { id: "MG-004", name: "MERCURY水凝按摩啫喱", price: 208.00 },
-        { id: "FMO-001", name: "香薰通淋巴面部按摩油", price: 234.00 },
-        { id: "FMO-002", name: "香薰舒緩面部按摩油", price: 234.00 },
-        { id: "FMO-003", name: "香薰抗氧化面部按摩油", price: 234.00 },
+        { id: "MC-001", name: "維他命C美白按摩膏", price: 184 },
+        { id: "MC-002", name: "玫瑰保濕按摩膏", price: 184 },
+        { id: "MC-003", name: "甘菊藍防敏按摩膏", price: 184 },
+        { id: "MC-004", name: "青瓜舒緩按摩膏", price: 184 },
+        { id: "MC-005", name: "膠原蛋白按摩膏", price: 184 },
+        { id: "MC-006", name: "檸檬草消炎按摩膏", price: 184 },
+        { id: "MC-007", name: "純植物收毛孔按摩膏", price: 184 },
+        { id: "MC-009", name: "MERCURY水凝按摩膏", price: 208 },
+        { id: "MG-003", name: "膠原蛋白按摩啫喱", price: 184 },
+        { id: "MG-004", name: "MERCURY水凝按摩啫喱", price: 208 },
+        { id: "FMO-001", name: "香薰通淋巴面部按摩油", price: 234 },
+        { id: "FMO-002", name: "香薰舒緩面部按摩油", price: 234 },
+        { id: "FMO-003", name: "香薰抗氧化面部按摩油", price: 234 },
       ],
       "離子啫喱": [
-        { id: "IG-001", name: "維他命B5美白離子啫喱", price: 230.00 },
-        { id: "IG-002", name: "玫瑰保濕離子啫喱", price: 230.00 },
-        { id: "IG-003", name: "甘菊藍防敏離子啫喱", price: 230.00 },
-        { id: "IG-004", name: "青瓜舒緩離子啫喱", price: 230.00 },
-        { id: "IG-005", name: "膠原蛋白離子啫喱", price: 230.00 },
-        { id: "IG-006", name: "檸檬草消炎離子啫喱", price: 230.00 },
-        { id: "IG-007", name: "純植物收毛孔離子啫喱", price: 230.00 },
-        { id: "IG-009", name: "MERCURY水凝離子啫喱", price: 230.00 },
+        { id: "IG-001", name: "維他命B5美白離子啫喱", price: 230 },
+        { id: "IG-002", name: "玫瑰保濕離子啫喱", price: 230 },
+        { id: "IG-003", name: "甘菊藍防敏離子啫喱", price: 230 },
+        { id: "IG-004", name: "青瓜舒緩離子啫喱", price: 230 },
+        { id: "IG-005", name: "膠原蛋白離子啫喱", price: 230 },
+        { id: "IG-006", name: "檸檬草消炎離子啫喱", price: 230 },
+        { id: "IG-007", name: "純植物收毛孔離子啫喱", price: 230 },
+        { id: "IG-009", name: "MERCURY水凝離子啫喱", price: 230 },
       ],
       "底霜": [
-        { id: "BC-001", name: "熊果素/維他命C底霜", price: 230.00 },
-        { id: "BC-002", name: "膠原蛋白底霜", price: 230.00 },
-        { id: "BC-003", name: "細緻毛孔控油底霜", price: 230.00 },
-        { id: "BC-004", name: "玫瑰保濕底霜", price: 230.00 },
+        { id: "BC-001", name: "熊果素/維他命C底霜", price: 230 },
+        { id: "BC-002", name: "膠原蛋白底霜", price: 230 },
+        { id: "BC-003", name: "細緻毛孔控油底霜", price: 230 },
+        { id: "BC-004", name: "玫瑰保濕底霜", price: 230 },
       ],
       "面膜": [
-        { id: "FCM-001", name: "熊果素激白面膜", price: 254.00 },
-        { id: "FCM-002", name: "淨白保濕面膜", price: 254.00 },
-        { id: "FCM-003", name: "甘菊藍防敏面膜", price: 230.00 },
-        { id: "FCM-004", name: "活細胞舒緩面膜", price: 254.00 },
-        { id: "FCM-005", name: "骨膠原能量面膜", price: 254.00 },
-        { id: "FCM-006", name: "冰極暗瘡消炎面膜", price: 254.00 },
-        { id: "FCM-007", name: "純植物收毛孔面膜", price: 230.00 },
-        { id: "FCM-009", name: "MERCURY水凝面膜", price: 254.00 },
+        { id: "FCM-001", name: "熊果素激白面膜", price: 254 },
+        { id: "FCM-002", name: "淨白保濕面膜", price: 254 },
+        { id: "FCM-003", name: "甘菊藍防敏面膜", price: 230 },
+        { id: "FCM-004", name: "活細胞舒緩面膜", price: 254 },
+        { id: "FCM-005", name: "骨膠原能量面膜", price: 254 },
+        { id: "FCM-006", name: "冰極暗瘡消炎面膜", price: 254 },
+        { id: "FCM-007", name: "純植物收毛孔面膜", price: 230 },
+        { id: "FCM-009", name: "MERCURY水凝面膜", price: 254 },
       ],
       "眼部及唇部": [
-        { id: "EM-001", name: "膠原蛋白修護眼膜", price: 230.00 },
-        { id: "ECG-001", name: "胡蘿蔔緊緻眼啫喱", price: 230.00 },
-        { id: "ECG-002", name: "純中草藥馬尾草眼霜", price: 230.00 },
-        { id: "LM-001", name: "維他命E修護唇膜", price: 180.00 },
-        { id: "LM-002", name: "DPHP高保濕去紋唇膜", price: 180.00 },
-        { id: "LM-003", name: "紅沒藥醇護理唇膜", price: 180.00 },
+        { id: "EM-001", name: "膠原蛋白修護眼膜", price: 230 },
+        { id: "ECG-001", name: "胡蘿蔔緊緻眼啫喱", price: 230 },
+        { id: "ECG-002", name: "純中草藥馬尾草眼霜", price: 230 },
+        { id: "LM-001", name: "維他命E修護唇膜", price: 180 },
+        { id: "LM-002", name: "DPHP高保濕去紋唇膜", price: 180 },
+        { id: "LM-003", name: "紅沒藥醇護理唇膜", price: 180 },
       ],
       "暗瘡黑頭": [
-        { id: "SDC-001", name: "暗瘡消炎水(有粉)", price: 176.00 },
-        { id: "SDC-002", name: "暗瘡消炎水(無粉)", price: 148.00 },
-        { id: "SDC-003", name: "暗瘡膏", price: 208.00 },
-        { id: "SDC-004", name: "去黑頭油脂液", price: 256.00 },
+        { id: "SDC-001", name: "暗瘡消炎水(有粉)", price: 176 },
+        { id: "SDC-002", name: "暗瘡消炎水(無粉)", price: 148 },
+        { id: "SDC-003", name: "暗瘡膏", price: 208 },
+        { id: "SDC-004", name: "去黑頭油脂液", price: 256 },
       ],
       "精華": [
-        { id: "EE-001", name: "MERCURY活細胞精華液", price: 300.00 },
-        { id: "EE-002", name: "玫瑰保濕精華液", price: 300.00 },
-        { id: "EE-003", name: "維他命C美白精華液", price: 300.00 },
+        { id: "EE-001", name: "MERCURY活細胞精華液", price: 300 },
+        { id: "EE-002", name: "玫瑰保濕精華液", price: 300 },
+        { id: "EE-003", name: "維他命C美白精華液", price: 300 },
       ],
       "面霜": [
-        { id: "DC-001", name: "維他命C美白面霜", price: 230.00 },
-        { id: "DC-002", name: "骨膠原蛋白面霜", price: 230.00 },
-        { id: "DC-003", name: "甘菊藍防敏面霜", price: 230.00 },
-        { id: "DC-004", name: "防曬淨白面霜", price: 346.00 },
-        { id: "DC-005", name: "純植物收毛孔面霜", price: 242.00 },
-        { id: "DC-006", name: "MERCURY水凝面霜", price: 276.00 },
+        { id: "DC-001", name: "維他命C美白面霜", price: 230 },
+        { id: "DC-002", name: "骨膠原蛋白面霜", price: 230 },
+        { id: "DC-003", name: "甘菊藍防敏面霜", price: 230 },
+        { id: "DC-004", name: "防曬淨白面霜", price: 346 },
+        { id: "DC-005", name: "純植物收毛孔面霜", price: 242 },
+        { id: "DC-006", name: "MERCURY水凝面霜", price: 276 },
       ],
       "身體護理": [
-        { id: "EMO-001", name: "青檸橙花香薰按摩油", price: 260.00 },
-        { id: "EMO-002", name: "香薰舒緩身體按摩油", price: 260.00 },
-        { id: "EMO-003", name: "香薰排毒減肥護理油", price: 260.00 },
-        { id: "EMO-004", name: "香薰消水腫護理油", price: 260.00 },
-        { id: "EMO-006", name: "推背淋巴香薰按摩油", price: 260.00 },
-        { id: "MO-001", name: "維他命E按摩油", price: 196.00 },
-        { id: "MO-002", name: "玫瑰草按摩油", price: 196.00 },
-        { id: "MO-003", name: "白蘭花按摩油", price: 196.00 },
-        { id: "MO-004", name: "舒筋活絡按摩油", price: 196.00 },
-        { id: "BT-011", name: "香薰胸部提升啫喱", price: 300.00 },
-        { id: "BT-012", name: "香薰胸部收緊啫喱", price: 300.00 },
-        { id: "BT-013", name: "活性豐胸多元精華乳霜", price: 576.00 },
+        { id: "EMO-001", name: "青檸橙花香薰按摩油", price: 260 },
+        { id: "EMO-002", name: "香薰舒緩身體按摩油", price: 260 },
+        { id: "EMO-003", name: "香薰排毒減肥護理油", price: 260 },
+        { id: "EMO-004", name: "香薰消水腫護理油", price: 260 },
+        { id: "EMO-006", name: "推背淋巴香薰按摩油", price: 260 },
+        { id: "MO-001", name: "維他命E按摩油", price: 196 },
+        { id: "MO-002", name: "玫瑰草按摩油", price: 196 },
+        { id: "MO-003", name: "白蘭花按摩油", price: 196 },
+        { id: "MO-004", name: "舒筋活絡按摩油", price: 196 },
+        { id: "BT-011", name: "香薰胸部提升啫喱", price: 300 },
+        { id: "BT-012", name: "香薰胸部收緊啫喱", price: 300 },
+        { id: "BT-013", name: "活性豐胸多元精華乳霜", price: 576 },
       ],
       "減肥": [
-        { id: "BT-001", name: "辣椒熱能減肥膏(普通型)", price: 208.00 },
-        { id: "BT-002", name: "辣椒熱能減肥膏(特強型)", price: 230.00 },
-        { id: "BT-003", name: "薄荷咖啡因子減肥膏", price: 184.00 },
-        { id: "BT-004", name: "去蜂窩橙皮紋膏", price: 300.00 },
-        { id: "BT-007", name: "辣椒熱能減肥啫喱(普通型)", price: 208.00 },
-        { id: "BT-008", name: "辣椒熱能減肥啫喱(特強型)", price: 230.00 },
-        { id: "BT-009", name: "冰極凍身收緊啫喱", price: 208.00 },
-        { id: "BT-010", name: "薄荷咖啡因子減肥啫喱", price: 230.00 },
-        { id: "BT-014", name: "胡椒薑排毒去水腫啫喱", price: 360.00 },
-        { id: "AS-005", name: "MERCURY排毒香薰鹽", price: 150.00 },
-        { id: "AS-006", name: "MERCURY減肥香薰鹽", price: 150.00 },
+        { id: "BT-001", name: "辣椒熱能減肥膏(普通型)", price: 208 },
+        { id: "BT-002", name: "辣椒熱能減肥膏(特強型)", price: 230 },
+        { id: "BT-003", name: "薄荷咖啡因子減肥膏", price: 184 },
+        { id: "BT-004", name: "去蜂窩橙皮紋膏", price: 300 },
+        { id: "BT-007", name: "辣椒熱能減肥啫喱(普通型)", price: 208 },
+        { id: "BT-008", name: "辣椒熱能減肥啫喱(特強型)", price: 230 },
+        { id: "BT-009", name: "冰極凍身收緊啫喱", price: 208 },
+        { id: "BT-010", name: "薄荷咖啡因子減肥啫喱", price: 230 },
+        { id: "BT-014", name: "胡椒薑排毒去水腫啫喱", price: 360 },
+        { id: "AS-005", name: "MERCURY排毒香薰鹽", price: 150 },
+        { id: "AS-006", name: "MERCURY減肥香薰鹽", price: 150 },
       ]
     }
   }
@@ -274,11 +274,31 @@ const App = () => {
     const totalVal = stats.salonHalfTotal;
 
     // --- 美容院裝優化邏輯 (鎖死 $800 / $1600) ---
-    if (totalVal >= 2300) { salonLabel = "已享有 $1600 送 $700 優惠"; salonDeduct = 700; salonPercent = 100; }
-    else if (totalVal >= 1600) { salonLabel = `已扣減 $700，仲可以揀多 $${(2300 - totalVal).toFixed(2)} 免費貨`; salonDeduct = totalVal - 1600; salonPercent = 100; }
-    else if (totalVal >= 1000) { salonLabel = `已享 $200 優惠，仲差 $${(1600 - totalVal).toFixed(2)} 享 $700 優惠`; salonDeduct = 200; salonPercent = (totalVal / 1600) * 100; }
-    else if (totalVal >= 800) { salonLabel = `已扣減 $200，仲可以揀多 $${(1000 - totalVal).toFixed(2)} 免費貨`; salonDeduct = totalVal - 800; salonPercent = 100; }
-    else { salonLabel = `仲差 $${(800 - totalVal).toFixed(2)} 享 $800 送 $200 優惠`; salonDeduct = 0; salonPercent = (totalVal / 800) * 100; }
+    if (totalVal >= 2300) { 
+      salonLabel = "已享有 $1600 送 $700 優惠"; 
+      salonDeduct = 700; 
+      salonPercent = 100; 
+    }
+    else if (totalVal >= 1600) { 
+      salonLabel = `已扣減 $700，仲可以揀多 $${(2300 - totalVal).toFixed(2)} 免費貨`; 
+      salonDeduct = totalVal - 1600; 
+      salonPercent = 100; 
+    }
+    else if (totalVal >= 1000) { 
+      salonLabel = `已享 $200 優惠，仲差 $${(1600 - totalVal).toFixed(2)} 享 $700 優惠`; 
+      salonDeduct = 200; 
+      salonPercent = (totalVal / 1600) * 100; 
+    }
+    else if (totalVal >= 800) { 
+      salonLabel = `已扣減 $200，仲可以揀多 $${(1000 - totalVal).toFixed(2)} 免費貨`; 
+      salonDeduct = totalVal - 800; 
+      salonPercent = 100; 
+    }
+    else { 
+      salonLabel = `仲差 $${(800 - totalVal).toFixed(2)} 享 $800 送 $200 優惠`; 
+      salonDeduct = 0; 
+      salonPercent = (totalVal / 800) * 100; 
+    }
 
     const retailDiscount = stats.retailCount >= 6 ? stats.retailTotal * 0.2 : 0;
     const retailFinal = stats.retailTotal - retailDiscount;
@@ -480,7 +500,7 @@ const App = () => {
         </div>
       </div>
 
-      {/* 底部迷你 Bar：Z-900 */}
+      {/* 底部迷你 Bar：獨立按鈕層 */}
       <div className={`lg:hidden fixed bottom-6 inset-x-4 z-[900] transition-all duration-500 ${hasItems && !isExpanded ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-20 opacity-0 scale-90 pointer-events-none'}`}>
         <button 
           onClick={(e) => { e.stopPropagation(); setIsExpanded(true); }} 
