@@ -16,7 +16,7 @@ import {
   Minimize2
 } from 'lucide-react';
 
-// --- 資料庫 ---
+// --- 完整資料庫 ---
 const DATA = {
   mask: {
     label: "面膜紙",
@@ -217,7 +217,6 @@ const App = () => {
     setActiveSubTab(DATA[activeTab].subCategories[0]);
   }, [activeTab]);
 
-  // 面膜階梯價
   const MASK_TIERS = {
     normal: [{ qty: 1000, price: 5 }, { qty: 500, price: 5.5 }, { qty: 100, price: 6 }, { qty: 20, price: 8 }],
     serum: [{ qty: 1000, price: 8 }, { qty: 500, price: 9.5 }, { qty: 100, price: 12 }, { qty: 20, price: 14 }]
@@ -272,7 +271,6 @@ const App = () => {
     let salonLabel = "", salonDeduct = 0, salonPercent = 0;
     const totalVal = stats.salonHalfTotal;
 
-    // --- 美容院裝優化邏輯 (鎖死 $800 / $1600) ---
     if (totalVal >= 2300) { salonLabel = "已享有 $1600 送 $700 優惠"; salonDeduct = 700; salonPercent = 100; }
     else if (totalVal >= 1600) { salonLabel = `已扣減 $700，仲可以揀多 $${(2300 - totalVal).toFixed(2)} 免費貨`; salonDeduct = totalVal - 1600; salonPercent = 100; }
     else if (totalVal >= 1000) { salonLabel = `已享 $200 優惠，仲差 $${(1600 - totalVal).toFixed(2)} 享 $700 優惠`; salonDeduct = 200; salonPercent = (totalVal / 1600) * 100; }
@@ -303,14 +301,13 @@ const App = () => {
   const IsolatedInput = React.memo(({ id, initialQty, onUpdate, isMini }) => {
     const [inputValue, setInputValue] = useState(initialQty === 0 ? "" : initialQty.toString());
     useLayoutEffect(() => { setInputValue(initialQty === 0 ? "" : initialQty.toString()); }, [initialQty]);
-    const handleKeyDown = (e) => { if (e.key === 'Enter') { onUpdate(id, inputValue); e.target.blur(); } };
     return (
       <input 
         type="number" pattern="\d*" inputMode="numeric"
         value={inputValue} placeholder="0"
         onChange={(e) => setInputValue(e.target.value)} 
         onBlur={() => onUpdate(id, inputValue)}
-        onKeyDown={handleKeyDown}
+        onKeyDown={(e) => { if (e.key === 'Enter') { onUpdate(id, inputValue); e.target.blur(); } }}
         className={`mobile-input ${isMini ? 'w-10 lg:w-12 text-[14px] lg:text-[18px]' : 'w-12 lg:w-16 text-[16px] lg:text-[22px]'} text-center bg-transparent font-black focus:outline-none text-slate-900`} 
       />
     );
@@ -336,7 +333,7 @@ const App = () => {
 
   const CartContent = ({ isSidebar = false }) => (
     <div className={`space-y-6 lg:space-y-8 ${isSidebar ? 'p-0' : 'px-6 lg:px-10 pb-12'}`}>
-      <div className="space-y-4 bg-white/5 p-5 lg:p-8 rounded-[1.5rem] lg:rounded-[2.5rem] border border-white/10 shadow-inner">
+      <div id="customer-form" className="space-y-4 bg-white/5 p-5 lg:p-8 rounded-[1.5rem] lg:rounded-[2.5rem] border border-white/10 shadow-inner">
         <div className="text-[12px] lg:text-[14px] font-black text-emerald-400 uppercase tracking-[0.2em] flex items-center gap-2 mb-2 lg:mb-4"><Tag size={16} /> 聯絡資料 (可選)</div>
         <div className="space-y-3 lg:space-y-5">
           <input type="text" placeholder="公司名稱" className="w-full bg-black/40 border border-white/10 rounded-xl lg:rounded-2xl py-3 lg:py-5 px-4 text-sm lg:text-lg text-white outline-none focus:border-emerald-500" value={customerInfo.company} onChange={(e) => setCustomerInfo({...customerInfo, company: e.target.value})} />
@@ -457,50 +454,46 @@ const App = () => {
         </div>
       </main>
 
-      {/* 手機版：專用底部「迷你 Bar」及彈出層 (層級優化) */}
-      <div className={`lg:hidden fixed inset-x-0 bottom-0 z-[1000] ${hasItems ? 'translate-y-0' : 'translate-y-full'} transition-transform duration-500`}>
-        
-        {/* 全屏彈出層 */}
-        <div className={`fixed inset-0 bg-slate-950 transition-opacity duration-300 ${isExpanded ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
-          <div className="h-full flex flex-col">
-            <div className="px-6 py-6 border-b border-white/10 flex justify-between items-center bg-slate-900">
+      {/* 手機版：全新獨立全屏遮罩層 (最高層級) */}
+      <div className={`lg:hidden fixed inset-0 z-[9999] transition-all duration-500 pointer-events-none ${isExpanded ? 'opacity-100' : 'opacity-0'}`}>
+         <div className={`absolute inset-0 bg-slate-950 transition-opacity duration-500 ${isExpanded ? 'opacity-95' : 'opacity-0'}`} />
+         <div className={`absolute inset-0 flex flex-col pointer-events-auto transform transition-transform duration-500 ${isExpanded ? 'translate-y-0' : 'translate-y-full'}`}>
+            <div className="px-6 py-6 border-b border-white/10 flex justify-between items-center bg-slate-900 shadow-xl">
               <h3 className="text-white text-xl font-black flex items-center gap-2"><ShoppingCart className="text-rose-500" /> 落單詳情</h3>
-              <button onClick={() => setIsExpanded(false)} className="bg-white/10 p-3 rounded-full text-white active:bg-rose-500"><X size={28} /></button>
+              {/* 強制置頂關閉掣 */}
+              <button onClick={() => setIsExpanded(false)} className="bg-white/10 p-3 rounded-full text-white active:bg-rose-500 shadow-lg"><X size={28} /></button>
             </div>
             <div className="flex-1 overflow-y-auto bg-slate-950 py-6"><CartContent isSidebar={false} /></div>
-            <div className="p-6 bg-slate-900 border-t border-white/10">
+            <div className="p-6 bg-slate-900 border-t border-white/10 shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
               <div className="flex justify-between items-center mb-4">
                 <div className="flex flex-col">
                   <span className="text-[10px] text-slate-500 font-black uppercase tracking-widest">應付總額</span>
                   <span className="text-3xl font-mono font-black text-white">HK$ {promos.grandTotal.toFixed(2)}</span>
                 </div>
-                <button onClick={handleFinalOrder} className="bg-emerald-500 text-white px-8 py-4 rounded-2xl font-black text-lg shadow-xl active:scale-95">落單</button>
+                <button onClick={handleFinalOrder} className="bg-emerald-500 text-white px-10 py-5 rounded-2xl font-black text-lg shadow-xl active:scale-95 active:bg-emerald-400">WhatsApp 送出</button>
               </div>
             </div>
-          </div>
-        </div>
+         </div>
+      </div>
 
-        {/* 底部迷你 Bar - 確保喺所有內容最上面 */}
-        {!isExpanded && (
-          <div className="px-4 pb-6 pt-2 bg-transparent">
-            <button 
-              onClick={(e) => { e.preventDefault(); setIsExpanded(true); }} 
-              className="w-full bg-slate-900 text-white rounded-full py-5 px-6 shadow-[0_15px_40px_rgba(0,0,0,0.6)] border border-white/10 flex items-center justify-between active:scale-95 transition-transform"
-            >
-              <div className="flex items-center gap-3">
-                <div className="bg-rose-500 p-2 rounded-full relative">
-                  <ShoppingCart size={20} />
-                  <span className="absolute -top-1 -right-1 bg-white text-rose-500 text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-full border border-rose-500">{cartSummary.itemsList.length}</span>
-                </div>
-                <span className="text-sm font-black tracking-widest uppercase text-slate-300">查看訂單</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="text-xl font-mono font-black text-white">HK$ {promos.grandTotal.toFixed(2)}</span>
-                <ChevronUp size={24} className="text-rose-500 animate-bounce" />
-              </div>
-            </button>
+      {/* 底部迷你 Bar (獨立按鈕層) */}
+      <div className={`lg:hidden fixed bottom-6 inset-x-4 z-[900] transition-all duration-500 ${hasItems && !isExpanded ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0 pointer-events-none'}`}>
+        <button 
+          onClick={() => setIsExpanded(true)} 
+          className="w-full bg-slate-900 text-white rounded-full py-5 px-6 shadow-[0_20px_60px_rgba(0,0,0,0.8)] border border-white/10 flex items-center justify-between active:scale-95 active:bg-slate-800 transition-all"
+        >
+          <div className="flex items-center gap-3">
+            <div className="bg-rose-500 p-2 rounded-full relative">
+              <ShoppingCart size={22} />
+              <span className="absolute -top-1 -right-1 bg-white text-rose-500 text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-full border-2 border-rose-500">{cartSummary.itemsList.length}</span>
+            </div>
+            <span className="text-[14px] font-black tracking-widest uppercase text-slate-200">查看清單 / 落單</span>
           </div>
-        )}
+          <div className="flex items-center gap-3">
+            <span className="text-xl font-mono font-black text-white">HK$ {promos.grandTotal.toFixed(2)}</span>
+            <ChevronUp size={28} className="text-rose-500 animate-bounce" />
+          </div>
+        </button>
       </div>
 
       <style>{`
